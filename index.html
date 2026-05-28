@@ -106,6 +106,18 @@ header p{font-size:.78rem;opacity:.75;margin-top:2px;}
 .ig-tile-label{font-size:.95rem;font-weight:600;letter-spacing:.01em;}
 .ig-tile-sub{font-size:.75rem;opacity:.7;}
 .novid-filter{background:#f5f5f5;border:1.5px dashed #ccc;color:#888;}
+.hbtn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:.82rem;cursor:pointer;transition:all .2s;}
+.hbtn.active{background:var(--green);color:#fff;border-color:var(--green);}
+.hclean{background:#d4edda;color:#155724;font-size:.68rem;}
+.hgood{background:#fff3cd;color:#856404;font-size:.68rem;}
+.htreat{background:#fde;color:#c0392b;font-size:.68rem;}
+.prating{background:#fff8e1;color:#f59e0b;font-size:.75rem;letter-spacing:1px;}
+.star{cursor:pointer;font-size:1.4rem;color:#ddd;transition:color .15s;}
+.star.on{color:#f59e0b;}
+.star:hover,.star:hover~.star{color:#f59e0b;}
+.stars-wrap{display:flex;gap:2px;margin-top:6px;}
+.rating-row{margin-top:8px;}
+
 
 /* Expand */
 .cexp{display:none;border-top:1px solid var(--border);}
@@ -174,6 +186,13 @@ header p{font-size:.78rem;opacity:.75;margin-top:2px;}
     <button class="fbtn" onclick="setF('zoet',this)">🍫 Zoet</button>
     <button class="fbtn" onclick="setF('saus',this)">🥫 Sauzen</button>
     <button class="fbtn novid-filter" onclick="setF('novid',this)">📵 Zonder video</button>
+  </div>
+  <div class="frow" style="margin-top:6px">
+    <button class="hbtn active" onclick="setH(0,this)">Alle</button>
+    <button class="hbtn" onclick="setH(1,this)">💚 Clean</button>
+    <button class="hbtn" onclick="setH(2,this)">🟡 Goed</button>
+    <button class="hbtn" onclick="setH(3,this)">🔴 Treat</button>
+    <button class="hbtn" onclick="setH(-1,this)" style="border-style:dashed">⭐ Beoordeeld</button>
   </div>
 </div>
 
@@ -1617,7 +1636,7 @@ const R = [
 ];
 
 // ── STATE ─────────────────────────────────────────────────────
-let filt='all', sort='cal', open=null, selIngs=new Set(), ingOpen=true, maxTime=0;
+let filt='all', sort='cal', open=null, selIngs=new Set(), ingOpen=true, maxTime=0, healthFilt=0;
 
 // ── ALL INGREDIENTS (deduped, cleaned base names) ──────────────
 function cleanIng(s){
@@ -1725,6 +1744,39 @@ document.getElementById('ing-selected').addEventListener('mousedown',function(e)
 // ── CARD RENDER ───────────────────────────────────────────────
 const catCls={maaltijd:'cat-m',ontbijt:'cat-o',snack:'cat-s',zoet:'cat-z',saus:'cat-ss'};
 
+
+// ── HEALTH SCORES (1=💚Clean, 2=🟡Goed, 3=🔴Treat, 0=n.v.t.) ──
+const HEALTH={
+  1:2, 2:2, 3:3, 4:3, 5:1, 6:2, 7:1, 8:1, 9:2, 10:2,
+  11:2, 12:1, 13:1, 14:1, 15:2, 16:2, 17:1, 18:2, 19:2, 20:2,
+  21:2, 22:0, 23:0, 24:0, 25:0, 26:2, 27:2, 28:1, 29:1, 30:1,
+  31:1, 32:1, 33:1, 34:2, 35:1, 36:2, 37:1, 38:1, 39:2, 40:1,
+  41:1, 42:2, 43:2, 44:1, 45:1, 46:1, 47:2, 48:1, 49:2, 50:1,
+  51:1, 52:2, 53:1, 54:1, 55:2, 56:3, 57:2, 58:3, 59:2, 60:1,
+  61:1, 62:2, 63:2, 64:2, 65:1, 66:1, 67:2, 68:3, 69:1
+};
+const HEALTH_LBL={1:'💚 Clean',2:'🟡 Goed',3:'🔴 Treat'};
+const HEALTH_CSS={1:'hclean',2:'hgood',3:'htreat'};
+
+// ── RATINGS ───────────────────────────────────────────────────
+const ratings=JSON.parse(localStorage.getItem('ll_ratings')||'{}');
+function rateRecipe(id,stars){
+  ratings[id]=stars;
+  localStorage.setItem('ll_ratings',JSON.stringify(ratings));
+  document.getElementById('stars-'+id).innerHTML=starsHtml(id);
+  const cardEl=document.getElementById('c'+id);
+  if(cardEl){const b=cardEl.querySelector('.rating-badge');if(b)b.outerHTML=ratingBadge(id);}
+}
+function starsHtml(id){
+  const r=ratings[id]||0;
+  return[1,2,3,4,5].map(s=>`<span class="star ${s<=r?'on':''}" onclick="event.stopPropagation();rateRecipe(${id},${s})">★</span>`).join('');
+}
+function ratingBadge(id){
+  const r=ratings[id];
+  if(!r)return'';
+  return`<span class="pill prating">${'★'.repeat(r)}${'☆'.repeat(5-r)}</span>`;
+}
+
 function card(r){
   const mp=r.prep?'<span class="pill pprep">Meal prep</span>':'';
   const wn=r.warn?'<span class="pill pwarn">⚠️ Niet laag in cal</span>':'';
@@ -1732,6 +1784,9 @@ function card(r){
   const nt=r.note?`<div class="note">💬 ${r.note}</div>`:'';
   const hasVid=(r.id in videoURLs)?!!videoURLs[r.id]:!!r.link;
   const vb=hasVid?'<span class="vid-badge">🎬 video</span>':'';
+  const hs=HEALTH[r.id]||0;
+  const hb=hs>0?`<span class="pill ${HEALTH_CSS[hs]}">${HEALTH_LBL[hs]}</span>`:'';
+  const rb=ratingBadge(r.id);
   return `<div class="card" id="c${r.id}" onclick="tog(${r.id})">
     <div class="ch">
       ${vb}
@@ -1739,7 +1794,7 @@ function card(r){
       <div class="ctitle">${r.title}</div>
       <div class="cmacros">
         <span class="pill pcal">🔥 ${r.cal} kcal</span>
-        <span class="pill pprot">💪 ${r.prot}g eiwit</span>${mp}${wn}
+        <span class="pill pprot">💪 ${r.prot}g eiwit</span>${mp}${wn}${hb}${rb}
       </div>
     </div>
     <div class="cexp" id="x${r.id}">
@@ -1764,7 +1819,11 @@ function card(r){
           <h4>🎥 Video</h4>
           <div id="vid-section-${r.id}">${renderVideoSection(r.id)}</div>
         </div>
-        <button class="cpybtn" id="b${r.id}" onclick="cpy(event,${r.id})">📋 Kopieer boodschappenlijst</button>
+        <div class="rating-row esec" onclick="event.stopPropagation()">
+          <h4>⭐ Jouw beoordeling</h4>
+          <div id="stars-\${r.id}" class="stars-wrap">\${starsHtml(r.id)}</div>
+        </div>
+        <button class="cpybtn" id="b\${r.id}" onclick="cpy(event,\${r.id})">📋 Kopieer boodschappenlijst</button>
       </div>
     </div>
   </div>`;
@@ -1869,6 +1928,7 @@ function cancelVid(id){
 }
 
 function setF(c,el){filt=c;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+function setH(h,el){healthFilt=h;document.querySelectorAll('.hbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
 function setS(t){sort=t;document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('active'));document.getElementById({cal:'sc',prot:'sp',abc:'sa'}[t]).classList.add('active');render();}
 function setT(m){maxTime=m;['t0','t15','t30','t45','t60'].forEach(id=>document.getElementById(id).classList.remove('active'));document.getElementById('t'+(m||0)).classList.add('active');render();}
 function parseTime(s){const m=s.match(/(\d+)/);return m?parseInt(m[1]):999;}
@@ -1878,6 +1938,8 @@ function render(){
   let list=R.filter(r=>{
     if(filt==='novid'){const hv=(r.id in videoURLs)?!!videoURLs[r.id]:!!r.link;if(hv)return false;}
     else if(filt!=='all'&&r.cat!==filt)return false;
+    if(healthFilt===-1&&!ratings[r.id])return false;
+    else if(healthFilt>0&&(HEALTH[r.id]||0)!==healthFilt)return false;
     if(q&&!r.title.toLowerCase().includes(q)&&!r.ings.some(i=>(i[0]+' '+(i[1]||'')).toLowerCase().includes(q)))return false;
     if(selIngs.size>0&&![...selIngs].every(si=>r.ings.some(i=>(i[1]||'').toLowerCase().includes(si.toLowerCase()))))return false;
     if(maxTime>0&&parseTime(r.time)>maxTime)return false;
