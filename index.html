@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Lean & Loaded 💪</title>
+<link rel="manifest" href="manifest.json">
+<!-- PWA / Apple -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lean&amp;Loaded">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#22883a">
+<meta name="description" content="Low cal · High protein · Belgisch. Arno's persoonlijk kookboek.">
+<style>
+:root{
+  --green:#2d6a4f;--gl:#52b788;--gp:#d8f3dc;
+  --bg:#f6f8f6;--card:#fff;--text:#1a1f1a;--muted:#6b7a6b;
+  --border:#e0e8e0;--shadow:0 2px 14px rgba(45,106,79,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);}
+
+/* ── HEADER ── */
+header{background:var(--green);color:#fff;padding:18px 20px 14px;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,.2);}
+header h1{font-size:1.35rem;font-weight:800;letter-spacing:-.3px;}
+header p{font-size:.78rem;opacity:.75;margin-top:2px;}
+.hstats{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;}
+.hstat{font-size:.72rem;background:rgba(255,255,255,.18);padding:3px 9px;border-radius:20px;}
+
+/* ── CONTROLS ── */
+.ctrl{background:#fff;border-bottom:1px solid var(--border);padding:12px 16px 10px;}
+.swrap{position:relative;margin-bottom:9px;}
+.swrap input{width:100%;padding:9px 12px 9px 36px;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;outline:none;}
+.swrap input:focus{border-color:var(--gl);}
+.si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem;}
+.frow{display:flex;gap:5px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+.frow::-webkit-scrollbar{display:none;}
+.fbtn{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:.76rem;font-weight:600;cursor:pointer;color:var(--muted);white-space:nowrap;transition:all .13s;}
+.fbtn.active{background:var(--green);border-color:var(--green);color:#fff;}
+
+/* ── INGREDIENT FILTER ── */
+.ing-filter{background:#1b4332;border-bottom:2px solid #0a2e1f;padding:12px 16px;overflow:visible;position:relative;z-index:100;}
+.ing-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.ing-title{font-size:.82rem;font-weight:700;color:#fff;}
+.ing-toggle{font-size:.73rem;color:rgba(255,255,255,.6);}
+.ing-clear{font-size:.72rem;color:rgba(255,255,255,.6);cursor:pointer;text-decoration:underline;margin-top:8px;display:inline-block;}
+.ing-body{display:none;overflow:visible;}
+.ing-body.open{display:block;}
+.ing-search-wrap{position:relative;margin-top:10px;}
+.ing-search-wrap input{
+  width:100%;padding:10px 14px 10px 38px;
+  border:2px solid rgba(255,255,255,.3);border-radius:10px;
+  font-size:.88rem;outline:none;background:rgba(255,255,255,.12);
+  color:#fff;
+}
+.ing-search-wrap input::placeholder{color:rgba(255,255,255,.55);}
+.ing-search-wrap input:focus{border-color:#52b788;background:rgba(255,255,255,.18);}
+.ing-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none;}
+.ing-hint{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:5px;}
+.ing-dropdown{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:#fff;border:2px solid var(--green);
+  border-radius:10px;z-index:9999;
+  max-height:200px;overflow-y:auto;
+  display:none;box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+.ing-dropdown.open{display:block;}
+.ing-opt{padding:9px 14px;font-size:.85rem;cursor:pointer;color:var(--text);border-bottom:1px solid var(--bg);}
+.ing-opt:last-child{border-bottom:none;}
+.ing-opt:hover,.ing-opt.hi{background:var(--gp);color:var(--green);font-weight:700;}
+.ing-selected{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;}
+.ing-sel-chip{padding:5px 10px 5px 12px;border-radius:20px;background:#52b788;color:#fff;font-size:.78rem;font-weight:700;display:flex;align-items:center;gap:6px;}
+.ing-sel-chip .rm{cursor:pointer;font-size:1rem;line-height:1;opacity:.8;font-weight:400;}
+.ing-sel-chip .rm:hover{opacity:1;}
+
+/* ── SORT ── */
+.srow{display:flex;gap:7px;align-items:center;padding:7px 16px;border-bottom:1px solid var(--border);background:var(--bg);}
+.slbl{font-size:.73rem;color:var(--muted);}
+.sbtn{padding:3px 10px;border-radius:20px;border:1px solid var(--border);background:#fff;font-size:.73rem;cursor:pointer;color:var(--muted);transition:all .13s;}
+.sbtn.active{background:var(--gp);border-color:var(--gl);color:var(--green);font-weight:700;}
+
+/* ── GRID ── */
+.rinfo{padding:7px 16px 3px;font-size:.73rem;color:var(--muted);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;padding:12px 16px 80px;}
+
+/* ── CARD ── */
+.card{background:var(--card);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+.card:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(45,106,79,.14);}
+
+/* Card body */
+.ch{padding:12px 14px 10px;}
+.ccat{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.ctitle{font-size:.93rem;font-weight:800;line-height:1.3;}
+.cmacros{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;}
+.pill{padding:3px 8px;border-radius:20px;font-size:.7rem;font-weight:700;}
+.pcal{background:#fff3e0;color:#e65100;}
+.pprot{background:var(--gp);color:var(--green);}
+.pprep{background:#e8eaff;color:#3949ab;}
+.pwarn{background:#fff3e0;color:#bf360c;font-size:.68rem;}
+.vid-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:.7rem;padding:2px 6px;border-radius:20px;backdrop-filter:blur(4px);}
+.ch{position:relative;}
+.ig-tile{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);border-radius:14px;padding:3px;cursor:pointer;text-decoration:none;display:block;margin-bottom:8px;}
+.ig-tile-inner{background:#1a1a2e;border-radius:11px;padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;color:#fff;}
+.ig-tile-inner svg{width:36px;height:36px;fill:#fff;}
+.ig-tile-label{font-size:.95rem;font-weight:600;letter-spacing:.01em;}
+.ig-tile-sub{font-size:.75rem;opacity:.7;}
+.novid-filter{background:#f5f5f5;border:1.5px dashed #ccc;color:#888;}
+
+/* Expand */
+.cexp{display:none;border-top:1px solid var(--border);}
+.cexp.open{display:block;}
+.cei{padding:14px;}
+.esec{margin-bottom:12px;}
+.esec h4{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;}
+.ings{list-style:none;}
+.ings li{font-size:.83rem;padding:4px 0;border-bottom:1px solid var(--bg);display:flex;gap:8px;align-items:baseline;line-height:1.4;}
+.ings li:last-child{border-bottom:none;}
+.iamt{font-weight:800;color:var(--green);min-width:88px;flex-shrink:0;font-size:.78rem;}
+.steps{list-style:none;counter-reset:s;}
+.steps li{font-size:.83rem;padding:5px 0 5px 27px;position:relative;counter-increment:s;border-bottom:1px solid var(--bg);line-height:1.45;}
+.steps li:last-child{border-bottom:none;}
+.steps li::before{content:counter(s);position:absolute;left:0;top:6px;width:19px;height:19px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:800;}
+.cpybtn{width:100%;padding:10px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.83rem;font-weight:700;cursor:pointer;margin-top:10px;transition:background .15s;}
+.cpybtn:hover{background:#1b4332;}
+.cpybtn.ok{background:var(--gl);}
+.note{font-size:.77rem;color:var(--muted);font-style:italic;padding:6px 9px;background:var(--gp);border-radius:7px;margin-top:5px;line-height:1.4;}
+.btip{font-size:.77rem;color:#7b3c00;background:#fff3e0;padding:6px 9px;border-radius:7px;margin-top:5px;line-height:1.4;}
+
+/* ── VIDEO ── */
+.vid-section{margin-top:12px;}
+.vid-add-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border:1.5px dashed var(--border);border-radius:8px;background:#fff;color:var(--muted);font-size:.78rem;cursor:pointer;transition:all .13s;}
+.vid-add-btn:hover{border-color:var(--gl);color:var(--green);}
+.vid-thumb-wrap{position:relative;border-radius:10px;overflow:hidden;cursor:pointer;line-height:0;}
+.vid-thumb{width:100%;display:block;border-radius:10px;}
+.vid-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.55);color:#fff;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;pointer-events:none;}
+.vid-edit-bar{display:flex;justify-content:flex-end;gap:6px;margin-top:5px;}
+.vid-edit-btn{padding:4px 10px;border:1.5px solid var(--border);border-radius:7px;background:#fff;font-size:.72rem;cursor:pointer;color:var(--muted);}
+.vid-edit-btn:hover{border-color:var(--gl);color:var(--green);}
+.vid-del-btn{padding:4px 10px;border:none;border-radius:7px;background:#ffebee;font-size:.72rem;cursor:pointer;color:#c62828;}
+.vid-link-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;background:var(--green);color:#fff;border-radius:9px;font-size:.83rem;font-weight:700;text-decoration:none;transition:background .13s;}
+.vid-link-btn:hover{background:#1b4332;}
+.vid-input-wrap input{width:100%;padding:8px 11px;border:1.5px solid var(--gl);border-radius:9px;font-size:.83rem;outline:none;margin-top:6px;}
+.vid-input-row{display:flex;gap:6px;margin-top:7px;}
+
+/* Category colors */
+.cat-m{color:#c62828;}.cat-o{color:#e65100;}.cat-s{color:#1565c0;}.cat-z{color:#6a1b9a;}.cat-ss{color:#00695c;}
+
+@media(max-width:600px){.grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>💪 Lean &amp; Loaded</h1>
+  <p>Low calorie · High protein · Belgische supermarkt</p>
+  <div class="hstats">
+    <span class="hstat" id="hcount">69 recepten</span>
+    <span class="hstat">🇧🇪 BE-proof</span>
+    <span class="hstat">Laag in calorieën</span>
+  </div>
+</header>
+
+<div class="ctrl">
+  <div class="swrap">
+    <span class="si">🔍</span>
+    <input type="text" id="search" placeholder="Zoek recept of ingrediënt..." oninput="render()">
+  </div>
+  <div class="frow">
+    <button class="fbtn active" onclick="setF('all',this)">Alles</button>
+    <button class="fbtn" onclick="setF('maaltijd',this)">🍽️ Maaltijden</button>
+    <button class="fbtn" onclick="setF('ontbijt',this)">🍳 Ontbijt</button>
+    <button class="fbtn" onclick="setF('snack',this)">🥪 Snacks</button>
+    <button class="fbtn" onclick="setF('zoet',this)">🍫 Zoet</button>
+    <button class="fbtn" onclick="setF('saus',this)">🥫 Sauzen</button>
+    <button class="fbtn novid-filter" onclick="setF('novid',this)">📵 Zonder video</button>
+  </div>
+</div>
+
+<div class="ing-filter">
+  <div class="ing-header" onclick="toggleIngFilter()">
+    <span class="ing-title">🧺 Filter op wat je in huis hebt</span>
+    <span class="ing-toggle" id="ing-arrow">▲ verberg</span>
+  </div>
+  <div class="ing-body open" id="ing-body">
+    <div class="ing-search-wrap">
+      <span class="ing-search-icon">🔎</span>
+      <input type="text" id="ing-input" placeholder="bv. kipfilet, eieren, havermout…" autocomplete="off">
+      <div class="ing-dropdown" id="ing-dropdown"></div>
+    </div>
+    <div class="ing-hint">Klik een ingredient aan om het te selecteren. Meerdere = recepten met álle ingredients.</div>
+    <div class="ing-selected" id="ing-selected"></div>
+    <span class="ing-clear" id="ing-clear" onclick="clearIngs()" style="display:none">× Alles wissen</span>
+  </div>
+</div>
+
+<div class="srow">
+  <span class="slbl">Sorteer:</span>
+  <button class="sbtn active" id="sc" onclick="setS('cal')">↑ Calorieën</button>
+  <button class="sbtn" id="sp" onclick="setS('prot')">↓ Proteïne</button>
+  <button class="sbtn" id="sa" onclick="setS('abc')">A–Z</button>
+</div>
+<div class="srow">
+  <span class="slbl">⏱️ Tijd:</span>
+  <button class="sbtn active" id="t0" onclick="setT(0)">Alles</button>
+  <button class="sbtn" id="t15" onclick="setT(15)">≤ 15 min</button>
+  <button class="sbtn" id="t30" onclick="setT(30)">≤ 30 min</button>
+  <button class="sbtn" id="t45" onclick="setT(45)">≤ 45 min</button>
+  <button class="sbtn" id="t60" onclick="setT(60)">≤ 60 min</button>
+</div>
+<div class="rinfo" id="rinfo"></div>
+<div class="grid" id="grid"></div>
+
+<script>
+const INGS = [
+  'Griekse yoghurt','Eieren','Kipfilet','Havermout',
+  'Banaan','Zoete aardappel','Proteïnepoeder','Cacao / chocolade',
+  'Pindakaas','Tonijn','Mozzarella','Bloem'
+];
+
+const R = [
+// ══════════════ MAALTIJDEN ══════════════
+{id:1,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Chicken Fettuccine Alfredo',
+ cal:495,prot:73,fat:8,carbs:25,srv:'8 porties',time:'~35 min',prep:true,
+ emoji:'🍝',img:'pasta,creamy,chicken,alfredo',bg:'bg-m',
+ tags:['Kipfilet','Griekse yoghurt','Mozzarella'],
+ note:'Ideaal om op zondag in bulk te maken — 8 porties voor de hele week.',
+ btip:'Banza-pasta bestaat niet in België. Gebruik gewone fettuccine of volkoren variant (Barilla). Gecondenseerde melk ongezoet = Nestlé Carnation in het wit blik (Colruyt/Delhaize). Philadelphia light in elke supermarkt.',
+ ings:[
+  ['1,8 kg','kipfilet, in blokjes'],
+  ['450 g','fettuccine (volkoren of gewone, Barilla)'],
+  ['400 ml','gecondenseerde melk ongezoet (Nestlé Carnation — wit blik, Colruyt/Delhaize)'],
+  ['175 g','Philadelphia light'],
+  ['225 g','Griekse yoghurt 0%'],
+  ['80 g','geraspte Parmezaan'],
+  ['1 grote','witte ui, fijn gesneden'],
+  ['1½ el','knoflook uit een potje of vers geperst'],
+  ['kruiden kip:','1 el gerookte paprika + 1 el Italiaanse kruiden + 1 el knoflookpoeder + zout'],
+  ['2 tl','olijfolie'],
+ ],
+ steps:[
+  'Kook de pasta volgens de verpakking. Hou een glas kookwater apart.',
+  'Kruid de kip. Bak goudbruin in olijfolie op hoog vuur, 10–12 minuten. Zet apart.',
+  'Bak in dezelfde pan de ui glazig. Voeg knoflook toe en bak 1 minuut.',
+  'Giet de gecondenseerde melk erbij en roer de Philadelphia light erdoor tot de saus glad is.',
+  'Roer de Griekse yoghurt erdoor, dan de Parmezaan. Voeg een scheutje kookwater toe tot de saus glanst.',
+  'Schep de hete pasta door de saus. Verdeel over 8 bakjes en leg de kip erop.',
+ ]},
+{id:2,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Protein Pizza (BBQ kip)',
+ cal:97,prot:7,fat:1,carbs:12,srv:'per stuk (8 stuks)',time:'~30 min',prep:false,
+ emoji:'🍕',img:'pizza,healthy,thin+crust',bg:'bg-m',
+ tags:['Griekse yoghurt','Bloem','Kipfilet','Mozzarella'],
+ note:'97 calorieën per stuk — je kan een halve pizza eten voor minder dan 400 kcal.',
+ btip:'Kokosmeel bij Colruyt of Albert Heijn (bakken-afdeling). Fage 0% yoghurt bij Colruyt of Delhaize.',
+ ings:[
+  ['170 g','Griekse yoghurt 0%'],
+  ['100 g','gewone bloem'],
+  ['11 g','kokosmeel (Colruyt/Albert Heijn, bakken-afdeling)'],
+  ['9 g (1 el)','bakpoeder'],
+  ['kruiden:','2 tl knoflookpoeder + 1 tl zout + ½ tl gedroogde oregano'],
+  ['200 g','pizzasaus (potje)'],
+  ['56 g','mozzarella light'],
+  ['naar keuze','gegrilde kipfilet strips + BBQ saus (Heinz light)'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 175°C.',
+  'Meng alle korst-ingrediënten tot een deeg. Strooi wat bloem op je handen als het plakt.',
+  'Druk het deeg uit op bakpapier en bak 15 minuten.',
+  'Verdeel de pizzasaus erover, leg mozzarella en kip erop.',
+  'Nog 12 minuten bakken, dan 2–3 minuten onder de grill tot de kaas bruin en bubbelig is.',
+ ]},
+{id:3,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Flying Dutchman Burger',
+ cal:749,prot:72,fat:28,carbs:48,srv:'1 grote burger',time:'~25 min',prep:false,
+ emoji:'🍔',img:'burger,homemade,beef,gourmet',bg:'bg-m',
+ tags:['Griekse yoghurt','Eieren'],
+ note:'Hoge calorieën maar een massieve portie met 72 g proteïne. Dit is een echte maaltijd.',
+ btip:'Mager spek bij Colruyt/Delhaize. Heinz 0% suiker ketchup bij alle supermarkten.',
+ ings:[
+  ['2 sneden','zuurdesembrood'],
+  ['3 sneden','mager spek'],
+  ['1 plak','cheddar of Leerdammer light'],
+  ['½','witte ui, in ringen'],
+  ['naar smaak','augurken'],
+  ['230 g','rundergehakt 5% vet'],
+  ['kruiden:','1 tl zout + 1 tl peper + 1 tl paprika + 1 tl knoflookpoeder + 1 tl uienpoeder'],
+  ['Big Mac saus:','75 g Griekse yoghurt 0% + 2 el Heinz 0% ketchup + 1½ el fijngehakte augurk + 2 tl mosterd + kruiden'],
+ ],
+ steps:[
+  'Meng het gehakt met de kruiden. Maak de Big Mac saus en zet in de koelkast.',
+  'Vorm 3 dunne burgers. Bak 3–4 minuten per kant. Leg de kaas erop als je ze omdraait.',
+  'Toast het brood en bak het spek knapperig. Bak de uienringen tot licht gekleurd.',
+  'Stapel alles op: brood, saus, ui, burgers, spek, augurken, saus, brood.',
+ ]},
+{id:4,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Sweet Potato Hummus Bowl',
+ cal:578,prot:43,fat:12,carbs:76,srv:'1 portie',time:'~50 min oven / ~25 min airfryer',prep:false,
+ emoji:'🍠',img:'sweet+potato,bowl,healthy,hummus',bg:'bg-m',
+ tags:['Kipfilet','Zoete aardappel','Mozzarella'],
+ note:'Smaakt als iets van een restaurantje. Rode bietjeshummus is hier de sleutel.',
+ btip:'Rode bietjeshummus kant-en-klaar bij Colruyt, Delhaize of Albert Heijn. Nando\'s peri-peri mayo bij Delhaize.',
+ ings:[
+  ['300 g','zoete aardappel'],
+  ['80 g','gekookte kipfilet'],
+  ['20 g','mozzarella light'],
+  ['80 g','salade van komkommer, tomaat en ui'],
+  ['50 g','rode bietjeshummus (kant-en-klaar, Colruyt/Delhaize)'],
+  ['15 g','Nando\'s peri-peri mayo of sriracha mayo light'],
+  ['kruiden:','zout, peper, knoflookpoeder, paprika, chilivlokken'],
+ ],
+ steps:[
+  'Oven: prik gaatjes in de aardappel en bak op 200°C gedurende 45–50 minuten. Airfryer: 200°C, 20–25 minuten.',
+  'Snij open en prak los met een vork. Leg de mozzarella erop zodat die smelt.',
+  'Leg de kip, salade en hummus erop. Druppel de mayo erover.',
+ ]},
+{id:5,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'High Protein Caesar Wrap',
+ cal:298,prot:52,fat:4,carbs:12,srv:'1 wrap',time:'~15 min',prep:false,
+ emoji:'🌯',img:'wrap,caesar,chicken,salad',bg:'bg-m',
+ tags:['Mozzarella','Griekse yoghurt','Kipfilet'],
+ note:'De mozzarella bakt knapperig als wrap-basis — echt een slimme truc.',
+ btip:'Kalkoenham bij Delhaize of Colruyt als vervanger voor turkey pepperoni. Ansjovis pasta (optioneel) bij Delhaize of Carrefour.',
+ ings:[
+  ['110 g','mozzarella light (in plakken of geraspt)'],
+  ['16 plakjes','kalkoenham of kipfilet strips'],
+  ['60 g','romaine sla of ijsbergsla'],
+  ['Caesar dressing:','75 g Griekse yoghurt 0% + 2 el citroensap + 2 tl knoflookpoeder + 1 tl oregano + 1 tl Parmezaan + 1 tl Dijon mosterd + zout en peper'],
+ ],
+ steps:[
+  'Leg mozzarella in een dunne rechthoek op bakpapier. Verdeel de kalkoenham erover.',
+  'Oven: 220°C hetelucht, 12–15 minuten tot goudbruin. Airfryer: 200°C, 10–12 minuten.',
+  'Meng de dressing en schep die door de sla.',
+  'Leg het caesarslaatje op de knapperige basis en rol op.',
+ ]},
+{id:27,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Kip met Zoete Aardappel & Tzatziki',
+ cal:420,prot:48,fat:6,carbs:38,srv:'1 portie',time:'~25 min',prep:true,
+ emoji:'🍗',img:'chicken,sweet+potato,oven,roasted',bg:'bg-m',
+ tags:['Kipfilet','Zoete aardappel','Griekse yoghurt'],
+ note:'Simpelste maaltijd in het boek. Alles op één bakplaat de oven in. Perfect om 3–4 porties tegelijk te maken.',
+ btip:'Alles bij elke Belgische supermarkt.',
+ ings:[
+  ['200 g','kipfilet'],
+  ['250 g','zoete aardappel, in blokjes van 2 cm'],
+  ['1 tl','olijfolie'],
+  ['kruiden:','paprikapoeder, knoflookpoeder, oregano, zout, peper'],
+  ['Tzatziki:','150 g Griekse yoghurt 0% + ½ komkommer geraspt en uitgeknepen + 1 teentje knoflook + 1 el citroensap + dille + zout'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 200°C.',
+  'Schep de aardappelblokjes met olijfolie en kruiden door elkaar. Leg op een bakplaat.',
+  'Kruid de kip langs beide kanten en leg naast de aardappel.',
+  'Bak alles 20–25 minuten. Draai de kip halverwege om.',
+  'Meng intussen alle tzatziki-ingrediënten.',
+ ]},
+{id:28,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Tonijnsalade Wrap',
+ cal:340,prot:38,fat:8,carbs:28,srv:'1 wrap',time:'~10 min',prep:true,
+ emoji:'🐟',img:'tuna,wrap,healthy,lunch',bg:'bg-m',
+ tags:['Tonijn','Griekse yoghurt'],
+ note:'Snelste high-protein lunch. Maak 3–4 wraps op voorhand voor de week.',
+ btip:'Tonijn in bronwater is magerder dan in olie. Kies Saupiquet, Rio Mare of een huismerk. Volkoren tortilla\'s bij Colruyt of Delhaize.',
+ ings:[
+  ['2 blikjes (280 g)','tonijn in bronwater, goed uitgelekt'],
+  ['3 el','Griekse yoghurt 0% of Devos Lemmens light mayo'],
+  ['1 el','Dijon mosterd'],
+  ['½','komkommer, in kleine blokjes'],
+  ['1 el','citroensap'],
+  ['2','volkoren tortilla wraps'],
+  ['een handvol','ijsbergsla of rucola'],
+  ['kruiden:','zout, peper, paprikapoeder'],
+ ],
+ steps:[
+  'Meng tonijn, yoghurt, mosterd, komkommer, citroensap en kruiden door elkaar.',
+  'Leg de sla op de wrap en schep het tonijnmengsel erop.',
+  'Rol strak op. Direct eten of in folie wikkelen voor later.',
+ ]},
+{id:32,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Egg Muffins met Kip & Groenten',
+ cal:75,prot:9,fat:3,carbs:2,srv:'per muffin (12 stuks)',time:'~25 min',prep:true,
+ emoji:'🥚',img:'egg+muffins,baked,protein,breakfast',bg:'bg-m',
+ tags:['Eieren','Kipfilet','Mozzarella'],
+ note:'Maak 12 stuks op voorhand. 5 minuten in de ochtend opwarmen. Wissel de groenten naar wat je in huis hebt.',
+ btip:'Alles bij elke Belgische supermarkt. Muffinvorm van silicone of gewone muffinvorm met papieren vormpjes.',
+ ings:[
+  ['6','eieren'],
+  ['150 g','gekookte kipfilet, grof gehakt'],
+  ['50 g','mozzarella light, geraspt'],
+  ['½','rode paprika, fijn gesneden'],
+  ['2 el','verse spinazie of diepvries spinazie (ontdooid en uitgeknepen)'],
+  ['kruiden:','zout, peper, knoflookpoeder, paprikapoeder'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 175°C.',
+  'Klop de eieren los met de kruiden.',
+  'Verdeel kip, paprika en spinazie over 12 ingevet muffinvormpjes.',
+  'Giet het ei-mengsel erover. Strooi de mozzarella bovenop.',
+  'Bak 18–20 minuten tot het ei gestold is. Laat even afkoelen voor je ze uit de vorm haalt.',
+ ]},
+// ══════════════ ONTBIJT ══════════════
+{id:7,cat:'ontbijt',lbl:'🍳 Ontbijt',title:'High Protein Wafels',
+ cal:120,prot:11,fat:1.5,carbs:14,srv:'per wafel (±6 wafels)',time:'~15 min',prep:false,
+ emoji:'🧇',img:'waffles,healthy,berries,breakfast',bg:'bg-o',
+ tags:['Havermout','Eieren','Griekse yoghurt','Proteïnepoeder'],
+ note:'Met verse aardbeien of bosbessen zijn deze écht lekker.',
+ btip:'Vloeibare eiwitten = de eiwitten van eieren, zonder de dooiers (1 ei = ±30 ml eiwit). Je kan ook kant-en-klare vloeibare eiwitten kopen in een kartonnen pak bij Colruyt of Delhaize (in de koelkast bij de eieren). Skyr = een soort dikke IJslandse yoghurt, te koop als Alpro skyr bij Colruyt/Delhaize.',
+ ings:[
+  ['135 g','havermout'],
+  ['250 ml','eiwitten van ±8 eieren (of pak vloeibare eiwitten, koelkast bij de eieren)'],
+  ['240 g','skyr naturel of Griekse yoghurt 0%'],
+  ['1 tl','bakpoeder + 1½ tl vanille-extract + 1 tl kaneel'],
+  ['naar keuze','verse aardbeien, frambozen of bosbessen'],
+ ],
+ steps:[
+  'Doe alles in een blender en mix tot een glad beslag. Laat een paar minuten staan.',
+  'Bak in de wafelmaker tot goudbruin.',
+  'Leg er verse bessen op.',
+ ]},
+{id:8,cat:'ontbijt',lbl:'🍳 Ontbijt',title:'Low Cal Cinnamon Rolls',
+ cal:142,prot:13,fat:1.5,carbs:20,srv:'per rol (±20 kleine)',time:'~40 min',prep:true,
+ emoji:'🍥',img:'cinnamon+rolls,healthy,protein,baked',bg:'bg-o',
+ tags:['Griekse yoghurt','Bloem','Proteïnepoeder','Eieren'],
+ note:'Maak een hele batch op zondag en bewaar in de koelkast. Warme ontbijtjes voor de week.',
+ btip:'Caseïne proteïnepoeder zorgt voor een dikker deeg. Goedkoopste optie: Decathlon Impact Casein (~€25/kg). Sukrin Gold = bruine suikervervanger op basis van erythritol, bij Holland & Barrett of bol.com. Mag je het simpel houden? Gebruik gewone bruine suiker in kleinere hoeveelheid.',
+ ings:[
+  ['800 g','Griekse yoghurt 0%'],
+  ['1','eigeel'],
+  ['460 g','gewone bloem'],
+  ['50 g','caseïne proteïnepoeder (Decathlon)'],
+  ['85 g','Sukrin (H&B/bol.com) of 4 el gewone suiker'],
+  ['16 g','bakpoeder + zout'],
+  ['Vulling:','60 g Becel light + 120 g Sukrin Gold of 5 el bruine suiker + ruim kaneel'],
+  ['Frosting:','2 scoops proteïnepoeder + 340 g Griekse yoghurt 0%'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 190°C.',
+  'Roer yoghurt en eigeel door elkaar. Voeg de droge ingrediënten erbij en kneed tot een soepel deeg.',
+  'Snij het deeg in tweeën. Rol elk stuk uit tot een rechthoek van ±½ cm dik.',
+  'Smeer Becel light, strooi de Sukrin Gold en ruim kaneel erover.',
+  'Rol strak op en snij elk stuk in 10 kleine rolletjes. Bak 22–28 minuten.',
+  'Meng proteïnepoeder en yoghurt tot frosting en smeer over de warme rolletjes.',
+ ]},
+{id:9,cat:'ontbijt',lbl:'🍳 Ontbijt',title:'46 Cal Cinnamon Rolls (met gist)',
+ cal:46,prot:2,fat:0,carbs:9,srv:'per stuk (8 stuks)',time:'~2 uur (met rijstijd)',prep:false,
+ emoji:'🌀',img:'cinnamon+roll,glazed,homemade,oven',bg:'bg-o',
+ tags:['Bloem','Griekse yoghurt'],
+ note:'Laat het deeg \'s avonds rijzen in de koelkast en bak ze de volgende ochtend.',
+ btip:'Instant droog gist = Dr. Oetker gist, zakjes van 7 g (alle supermarkten, bakken-afdeling). Suikervrije ahornsiroop in de gezondheidsafdeling van Colruyt of Delhaize.',
+ ings:[
+  ['60 ml','warm water (40–45°C)'],
+  ['90 g','gewone bloem'],
+  ['1 zakje (7 g)','instant droog gist (Dr. Oetker)'],
+  ['Vulling:','2 el suikervrije ahornsiroop + 2 tl Sukrin Gold of bruine suiker + 1½ tl kaneel'],
+  ['Glazuur 1:','4 el Griekse yoghurt 0% + 3 el Sukrin icing of poedersuiker + ½ tl vanille'],
+  ['Glazuur 2:','3 el Sukrin icing of poedersuiker + 1 el magere melk'],
+ ],
+ steps:[
+  'Meng bloem, gist en zout. Voeg het warme water toe en kneed 5 minuten. Afdekken en 1–3 uur laten rijzen.',
+  'Verwarm de oven voor op 175°C. Verdeel in 8 balletjes en rol elk uit tot een strook.',
+  'Smeer de vulling, rol op en bak 15–17 minuten. 15 minuten laten rusten.',
+  'Smeer glazuur 1 en zet 1 uur in de koelkast. Druppel glazuur 2 erover.',
+ ]},
+{id:10,cat:'ontbijt',lbl:'🍳 Ontbijt',title:'Banana Bread Muffins (31 cal)',
+ cal:31,prot:3,fat:0,carbs:5,srv:'per muffin (26 stuks)',time:'~25 min',prep:true,
+ emoji:'🍌',img:'banana+bread,muffins,healthy,baked',bg:'bg-o',
+ tags:['Banaan','Griekse yoghurt','Bloem','Proteïnepoeder'],
+ note:'Hoe rijper de bananen, hoe zoeter de muffins. De bruine bananen zijn de beste.',
+ btip:'Proteïnepoeder van Decathlon of Action (sportafdeling). Alpro amandelmelk bij alle supermarkten.',
+ ings:[
+  ['3 rijpe bananen (±330 g)','geplet met een vork'],
+  ['170 g','Griekse yoghurt 0%'],
+  ['120 ml','Alpro amandelmelk ongezoet of magere melk'],
+  ['2 scoops','vanille proteïnepoeder (Decathlon)'],
+  ['60 g','gewone bloem'],
+  ['3 el','Sukrin of 2 el gewone suiker'],
+  ['½ tl','bakpoeder + ½ tl kaneel + ½ tl zout'],
+  ['optioneel','stukjes pure chocolade'],
+ ],
+ steps:[
+  'Meng alle natte ingrediënten in een kom.',
+  'Meng de droge ingrediënten apart. Schep het droge mengsel door het natte.',
+  'Verdeel over 26 muffinvormpjes en bak op 175°C gedurende 18–20 minuten.',
+ ]},
+{id:29,cat:'ontbijt',lbl:'🍳 Ontbijt',title:'Overnight Protein Oats',
+ cal:310,prot:32,fat:5,carbs:38,srv:'1 portie',time:'5 min + nacht',prep:true,
+ emoji:'🥣',img:'overnight+oats,healthy,berries,yogurt',bg:'bg-o',
+ tags:['Havermout','Griekse yoghurt','Proteïnepoeder'],
+ note:'\'s Avonds 5 minuten werk, \'s ochtends klaar ontbijt. 32 g proteïne zonder koken.',
+ btip:'Skyr naturel bij Colruyt/Delhaize (Alpro skyr of huismerk). Chiazaad bij Colruyt, Delhaize of Albert Heijn.',
+ ings:[
+  ['80 g','havermout'],
+  ['200 g','skyr naturel of Griekse yoghurt 0%'],
+  ['150 ml','magere melk of Alpro amandelmelk'],
+  ['1 scoop (30 g)','vanille proteïnepoeder (Decathlon)'],
+  ['1 el','chiazaad'],
+  ['1 tl','kaneel + 1 tl vanille-extract'],
+  ['naar keuze','verse of diepvries bosbessen of aardbeien'],
+ ],
+ steps:[
+  'Meng havermout, proteïnepoeder, kaneel en chiazaad in een pot.',
+  'Roer de skyr en de melk erdoor.',
+  'Een nacht in de koelkast. De volgende ochtend de bessen erop.',
+ ]},
+{id:30,cat:'ontbijt',lbl:'🍳 Ontbijt',title:'Proteïne Pannenkoeken (2 ingrediënten)',
+ cal:170,prot:14,fat:6,carbs:16,srv:'1 portie (6–8 kleine)',time:'~10 min',prep:false,
+ emoji:'🥞',img:'pancakes,healthy,banana,protein',bg:'bg-o',
+ tags:['Banaan','Eieren','Proteïnepoeder'],
+ note:'Klinkt raar, smaakt verrassend goed. Voeg een scoop proteïnepoeder toe voor nog meer eiwit.',
+ btip:'Alles bij elke Belgische supermarkt. Antikleefpan is belangrijk — bak zonder boter.',
+ ings:[
+  ['2 rijpe bananen','geplet met een vork'],
+  ['3 eieren'],
+  ['1 tl','kaneel'],
+  ['optioneel','1 scoop vanille proteïnepoeder'],
+  ['naar keuze','verse bessen of suikervrije ahornsiroop'],
+ ],
+ steps:[
+  'Plet de bananen goed. Klop de eieren erdoor. Voeg kaneel toe.',
+  'Bak kleine pannenkoekjes op middelhoog vuur in een antikleefpan (zonder boter). ±2 minuten per kant.',
+  'Serveer met verse bessen.',
+ ]},
+{id:33,cat:'ontbijt',lbl:'🍳 Ontbijt',title:'Baked Oats (Chocolade)',
+ cal:285,prot:26,fat:5,carbs:36,srv:'1 portie',time:'~25 min',prep:true,
+ emoji:'🫙',img:'baked+oats,chocolate,healthy,oatmeal',bg:'bg-o',
+ tags:['Havermout','Banaan','Eieren','Cacao / chocolade','Proteïnepoeder'],
+ note:'Smaakt als een warme chocoladetaart maar is gewoon havermout. Maak meerdere potjes tegelijk voor de week.',
+ btip:'Alles bij elke Belgische supermarkt. Oven of magnetron werkt voor dit recept. In een magnetron op hoog vermogen ±3–4 minuten in plaats van in de oven.',
+ ings:[
+  ['80 g','havermout'],
+  ['1 rijpe banaan','geplet'],
+  ['1','ei'],
+  ['150 ml','magere melk of Alpro amandelmelk'],
+  ['1 scoop','chocolade proteïnepoeder'],
+  ['1 el','cacaopoeder (Van Houten)'],
+  ['1 tl','bakpoeder'],
+  ['30 g','pure chocoladestukjes'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 180°C.',
+  'Meng havermout, geplete banaan, ei, melk, proteïnepoeder, cacao en bakpoeder goed door elkaar.',
+  'Schep in een ovenvaste schaal of pot. Druk de chocoladestukjes aan de bovenkant.',
+  'Bak 20–22 minuten. Laat 5 minuten rusten voor je eet.',
+ ]},
+// ══════════════ SNACKS ══════════════
+{id:6,cat:'snack',lbl:'🥪 Snack',title:'5-Minuten Tuna Crunch Bowl',
+ cal:378,prot:22,fat:16,carbs:44,srv:'1 portie',time:'~5 min',prep:true,
+ emoji:'🥗',img:'tuna,salad,bowl,healthy',bg:'bg-s',
+ tags:['Tonijn','Griekse yoghurt'],
+ note:'Geen koken, geen pannen. Alles erin gooien en het werkt.',
+ btip:'Kies tonijn in bronwater (niet in olie). Saupiquet, Rio Mare of huismerk. Light mayo = Devos Lemmens light.',
+ ings:[
+  ['250 g','komkommer, in blokjes'],
+  ['70 g','tonijn in bronwater + een scheutje sriracha'],
+  ['60 g','ui, fijn gesneden'],
+  ['80 g','avocado'],
+  ['40 g','Devos Lemmens light mayo'],
+  ['naar smaak','sriracha + lichte sojasaus + citroensap'],
+  ['20 g','lente-ui, in ringetjes'],
+ ],
+ steps:[
+  'Doe alles in een grote kom.',
+  'Goed mengen. Klaar.',
+ ]},
+{id:31,cat:'snack',lbl:'🥪 Snack',title:'Kwark Parfait met Rood Fruit',
+ cal:185,prot:25,fat:1,carbs:18,srv:'1 portie',time:'~3 min',prep:true,
+ emoji:'🍓',img:'yogurt+parfait,berries,granola,healthy',bg:'bg-s',
+ tags:['Griekse yoghurt'],
+ note:'Snelste high-protein snack. Maak 3–4 potjes op voorhand voor de week.',
+ btip:'Magere kwark bij Colruyt of Delhaize (huismerk of Danone Activia 0%). Granola light = Jordans Light of huismerk bij Colruyt.',
+ ings:[
+  ['200 g','magere kwark of skyr naturel'],
+  ['100 g','verse of diepvries aardbeien, frambozen of bosbessen'],
+  ['20 g','granola light (Jordans of huismerk)'],
+  ['1 tl','honing of suikervrije ahornsiroop'],
+ ],
+ steps:[
+  'Schep de kwark in een glas of kom.',
+  'Leg de bessen erop, strooi de granola erover en druppel de honing erover.',
+ ]},
+{id:34,cat:'snack',lbl:'🥪 Snack',title:'Frozen Yoghurt Bark',
+ cal:65,prot:7,fat:1,carbs:8,srv:'per stuk (12 stuks)',time:'~10 min + 3u vriezer',prep:true,
+ emoji:'🍦',img:'frozen+yogurt,bark,berries,healthy',bg:'bg-s',
+ tags:['Griekse yoghurt','Cacao / chocolade'],
+ note:'Zo simpel dat het stom is. Maak één keer per week en bewaar in de vriezer.',
+ btip:'Alles bij elke Belgische supermarkt. Pure chocolade 70%+ van Tony\'s, Lindt of huismerk.',
+ ings:[
+  ['400 g','Griekse yoghurt 0%'],
+  ['2 el','honing of suikervrije ahornsiroop'],
+  ['1 tl','vanille-extract'],
+  ['100 g','verse of diepvries gemengde bessen'],
+  ['30 g','pure chocolade 70%+, gesmolten (voor drizzle)'],
+ ],
+ steps:[
+  'Meng yoghurt, honing en vanille. Spreid uit op een met bakpapier beklede bakplaat (±1 cm dik).',
+  'Verdeel de bessen erover. Druppel de gesmolten chocolade erover.',
+  'Minstens 3 uur in de vriezer. Breek in stukken en bewaar in een diepvrieszakje.',
+ ]},
+// ══════════════ ZOET ══════════════
+{id:11,cat:'zoet',lbl:'🍫 Zoet',title:'Oreo McFlurry Dessert Dip',
+ cal:15,prot:2,fat:0.3,carbs:1.25,srv:'per eetlepel (62 el)',time:'~5 min',prep:false,
+ emoji:'🍨',img:'yogurt+dip,dessert,oreo,creamy',bg:'bg-z',
+ tags:['Griekse yoghurt','Proteïnepoeder'],
+ note:'Heel de pot is maar 116 g proteïne. Gebruik koude slagroom — ze moet glad zijn uit de koelkast.',
+ btip:'Amerikaans "Light Cool Whip" bestaat niet in België. Vervang door Alpro Slagroom Light of Chantilly light (alle supermarkten), licht opkloppen. Sukrin icing bij Holland & Barrett of bol.com.',
+ ings:[
+  ['340 g','Griekse yoghurt 0%'],
+  ['108 g','Alpro Slagroom Light, licht opgeklopt'],
+  ['3 scoops','vanille of chocolade proteïnepoeder'],
+  ['100 g','Sukrin icing (H&B/bol.com) of 50 g poedersuiker'],
+  ['1 zakje','suikervrij vanille puddingpoeder (Dr. Oetker, optioneel)'],
+  ['3 Oreos','fijngemalen'],
+ ],
+ steps:[
+  'Meng het proteïnepoeder en Sukrin icing door de yoghurt.',
+  'Schep de licht opgeklopte slagroom er voorzichtig door.',
+  'Meng de fijngemalen Oreos erdoor. Meteen eten.',
+ ]},
+{id:12,cat:'zoet',lbl:'🍫 Zoet',title:'Giant Protein Reese\'s',
+ cal:342,prot:51,fat:9,carbs:19,srv:'1 portie',time:'~25 min (incl. vriezer)',prep:false,
+ emoji:'🥜',img:'peanut+butter,chocolate,protein,dessert',bg:'bg-z',
+ tags:['Griekse yoghurt','Proteïnepoeder','Pindakaas','Cacao / chocolade'],
+ note:'51 g proteïne in één snack.',
+ btip:'PBFit pindakaaspoeder bij Delhaize of bol.com. Geen PBFit? Gebruik 1 el gewone pindakaas. Cavalier suikervrije chocolade bij Colruyt of Delhaize.',
+ ings:[
+  ['60 g','Griekse yoghurt 0%'],
+  ['1 scoop','vanille proteïnepoeder'],
+  ['32 g','pindakaaspoeder PBFit of 1 el gewone pindakaas'],
+  ['14 g','Cavalier melkchocolade suikervrij of pure chocolade 85%'],
+ ],
+ steps:[
+  'Meng yoghurt, proteïnepoeder en pindakaaspoeder tot een gladde massa.',
+  'Smelt de chocolade in de magnetron (30 seconden tegelijk, roeren ertussen).',
+  'Smeer de gesmolten chocolade erover en zet 20 minuten in de vriezer.',
+ ]},
+{id:13,cat:'zoet',lbl:'🍫 Zoet',title:'Chocolate Cloud Bread',
+ cal:240,prot:53,fat:1,carbs:4,srv:'1 portie',time:'~20 min',prep:false,
+ emoji:'☁️',img:'meringue,chocolate,light,fluffy',bg:'bg-z',
+ tags:['Eieren','Proteïnepoeder','Cacao / chocolade'],
+ note:'53 g proteïne voor 240 kcal. Meteen opeten — het zakt in als het afkoelt.',
+ btip:'300 ml eiwitten = de eiwitten van ±10 eieren. Je kan ook een pak vloeibare eiwitten kopen bij Colruyt of Delhaize (koelkast bij de eieren).',
+ ings:[
+  ['300 ml','eiwitten van ±10 eieren (of pak vloeibare eiwitten)'],
+  ['34 g (1 scoop)','chocolade proteïnepoeder (Decathlon Impact Whey Chocolade)'],
+  ['naar smaak','stevia druppels of vanille-extract'],
+ ],
+ steps:[
+  'Klop eiwitten en stevia met een elektrische mixer op hoge stand gedurende ±8 minuten tot zachte pieken.',
+  'Schep het proteïnepoeder er voorzichtig door.',
+  'Giet in een met bakpapier beklede ovenschaal. Bak op 180°C gedurende 10–12 minuten.',
+  'Meteen opeten terwijl het nog luchtig is.',
+ ]},
+{id:14,cat:'zoet',lbl:'🍫 Zoet',title:'High Protein Fudge Squares',
+ cal:175,prot:13,fat:11,carbs:9,srv:'per stukje (9 stuks)',time:'~20 min + 1u koelen',prep:true,
+ emoji:'🍫',img:'chocolate+fudge,squares,protein,healthy',bg:'bg-z',
+ tags:['Proteïnepoeder','Cacao / chocolade'],
+ note:'De optionele Biscoff glazuur maakt het next level. Biscoff is overal in België.',
+ btip:'Hüttenkäse = magere kwark in korrels, bij Colruyt, Delhaize of Lidl. Amandelbloemem bij Colruyt/Delhaize (bakken-afdeling).',
+ ings:[
+  ['300 g','Hüttenkäse (Colruyt/Delhaize/Lidl)'],
+  ['60 g','chocolade proteïnepoeder'],
+  ['40 g','amandelbloemem (bakken-afdeling)'],
+  ['100 g','pure chocolade 70%+, gesmolten'],
+  ['15 g','cacaopoeder (Van Houten)'],
+  ['1 el','suikervrije ahornsiroop (optioneel)'],
+  ['glazuur (opt.):','1 scoop caramel proteïne + 1 el gesmolten Biscoff + scheutje melk + fleur de sel'],
+ ],
+ steps:[
+  'Doe alles behalve de gesmolten chocolade in een blender en mix tot glad.',
+  'Giet de gesmolten chocolade erbij en roer goed door.',
+  'Spreid uit in een met bakpapier beklede schaal. Koelkast tot stevig. Snij in 9 stukjes.',
+ ]},
+{id:15,cat:'zoet',lbl:'🍫 Zoet',title:'Sweet Potato Chocoladefudge',
+ cal:100,prot:2,fat:4,carbs:14,srv:'per stukje (8 stuks)',time:'~50 min oven / ~25 min airfryer',prep:true,
+ emoji:'🍫',img:'chocolate+fudge,sweet+potato,healthy,dessert',bg:'bg-z',
+ tags:['Zoete aardappel','Cacao / chocolade'],
+ note:'Slechts 2 ingrediënten. Een nacht in de koelkast geeft de beste textuur.',
+ btip:'Pure chocolade 70%+: Tony\'s Puur, Lindt 70% of huismerk. Allemaal bij Colruyt, Delhaize of Lidl.',
+ ings:[
+  ['400 g','zoete aardappel'],
+  ['60 g','pure chocolade 70%+, in stukjes'],
+  ['20 g','pure chocolade 70%+, gesmolten (voor bovenop)'],
+ ],
+ steps:[
+  'Oven: bak op 200°C gedurende 45–50 minuten. Airfryer: 200°C, 20–25 minuten.',
+  'Snij open en prak het vruchtvlees fijn.',
+  'Meng de 60 g chocoladestukjes door het nog warme aardappelmengsel tot ze gesmolten zijn.',
+  'Druppel de 20 g gesmolten chocolade erover. Een nacht in de koelkast.',
+ ]},
+{id:16,cat:'zoet',lbl:'🍫 Zoet',title:'Reeses Cheesecake',
+ cal:391,prot:35,fat:25,carbs:11,srv:'1 portie',time:'~35 min',prep:false,
+ emoji:'🥜',img:'cheesecake,peanut+butter,chocolate,healthy',bg:'bg-z',
+ tags:['Griekse yoghurt','Eieren','Proteïnepoeder','Pindakaas','Cacao / chocolade'],
+ note:'Warm uit de oven is geweldig. Koud uit de koelkast de dag erna is nog beter.',
+ btip:'Philadelphia light bij alle supermarkten. Gewone pindakaas van een huismerk werkt perfect.',
+ ings:[
+  ['55 g','Philadelphia light'],
+  ['10 g','cacaopoeder (Van Houten)'],
+  ['15 g','chocolade proteïnepoeder'],
+  ['60 g','Griekse yoghurt 0% of skyr'],
+  ['15 g','pindakaas (huismerk)'],
+  ['1','ei'],
+ ],
+ steps:[
+  'Meng alles behalve de pindakaas tot een gladde massa.',
+  'Giet in een kleine ovenvaste schaal. Druppel de pindakaas erop en draai die losjes door het mengsel.',
+  'Bak op 180°C gedurende 25–30 minuten. Goed laten afkoelen — dan wordt het pas stevig.',
+ ]},
+{id:17,cat:'zoet',lbl:'🍫 Zoet',title:'High Protein Brownies',
+ cal:301,prot:21,fat:9,carbs:29,srv:'per stuk (2 stuks)',time:'~25 min',prep:false,
+ emoji:'🍫',img:'brownies,healthy,chocolate,protein',bg:'bg-z',
+ tags:['Banaan','Eieren','Proteïnepoeder','Cacao / chocolade'],
+ note:'Geen boter, geen olie, geen suiker. Verrassend luchtig en chocoladeachtig.',
+ btip:'Alles bij elke Belgische supermarkt. Gebruik extra lichte afgeroomde melk.',
+ ings:[
+  ['200 g','rijpe banaan (±2 bananen)'],
+  ['1','ei'],
+  ['100 ml','extra lichte afgeroomde melk'],
+  ['20 g','cacaopoeder (Van Houten)'],
+  ['30 g','proteïnepoeder'],
+  ['30 g','pure chocoladestukjes'],
+ ],
+ steps:[
+  'Doe alles in een kom en meng goed door elkaar.',
+  'Giet in een ovenschaal en bak op 180°C gedurende 15–20 minuten.',
+  '5 minuten laten rusten voor je aansnijdt.',
+ ]},
+{id:18,cat:'zoet',lbl:'🍫 Zoet',title:'Edible Cookie Dough (24 kcal/el)',
+ cal:24,prot:2,fat:0,carbs:2,srv:'per eetlepel (±57 el)',time:'~10 min',prep:true,
+ emoji:'🍪',img:'cookie+dough,edible,chocolate+chip,healthy',bg:'bg-z',
+ tags:['Eieren','Bloem','Proteïnepoeder','Cacao / chocolade'],
+ note:'Heel de pot bevat 133 g proteïne. Gebruik caseïne voor de dikste textuur — puur whey werkt ook maar de pot wordt iets losser.',
+ btip:'Vloeibare eiwitten = eiwitten van 6–7 eieren, of een pak kant-en-klare vloeibare eiwitten (koelkast bij de eieren, Colruyt/Delhaize). Sukrin Gold = bruine suikervervanger op basis van erythritol, bij Holland & Barrett of bol.com. Geen zin om die te zoeken? Gebruik gewoon 3 el bruine suiker. Caseïne + whey van Decathlon.',
+ ings:[
+  ['200 ml','eiwitten van ±6–7 eieren (of pak vloeibare eiwitten)'],
+  ['45 g','Becel light, gesmolten'],
+  ['48 g','Sukrin Gold (H&B/bol.com) of 3 el gewone bruine suiker'],
+  ['135 g','gewone bloem (hittebehandeld — zie stap 1)'],
+  ['3 scoops','caseïne proteïnepoeder (Decathlon)'],
+  ['1 scoop','whey proteïnepoeder (Decathlon)'],
+  ['48 g','Sukrin korrelig (H&B) of 3 el gewone suiker'],
+  ['1 tl','zout'],
+  ['43 g','pure chocolade grof gehakt (Tony\'s Puur of Callebaut)'],
+ ],
+ steps:[
+  'Hittebehandel de bloem eerst — dit is nodig om rauwe bloem veilig te eten. Beste manier: spreid de bloem uit op een bakplaat en zet 5 minuten in de oven op 160°C. Laat volledig afkoelen. Geen oven beschikbaar? Verwarm in de magnetron op hoog vermogen (800–900W) in intervallen van 30 seconden, roer telkens om, herhaal 3–4 keer tot de bloem duidelijk heet aanvoelt doorheen. Laat volledig afkoelen.',
+  'Meng alle droge ingrediënten (afgekoelde bloem, caseïne, whey, Sukrin korrelig, zout) in een grote kom.',
+  'Voeg de eiwitten, gesmolten Becel en Sukrin Gold toe. Roer tot een dik deeg.',
+  'Schep de chocoladestukjes erdoor.',
+  'Schep in een pot. Meteen eten of een uur in de koelkast voor een steviger resultaat.',
+ ]},
+{id:19,cat:'zoet',lbl:'🍫 Zoet',title:'Protein Nutella (Hazelnotendip)',
+ cal:38,prot:4.5,fat:2,carbs:1.5,srv:'per eetlepel (13 el)',time:'~20 min',prep:true,
+ emoji:'🌰',img:'nutella,hazelnut,chocolate,spread',bg:'bg-z',
+ tags:['Proteïnepoeder','Cacao / chocolade'],
+ note:'Maal de hazelnoten eerst lang genoeg — ze moeten echt romig worden voor je iets anders toevoegt.',
+ btip:'Rauwe hazelnoten bij Colruyt/Delhaize (noten-afdeling). Alpro amandelmelk bij alle supermarkten. Xanthaangom in de bakken-afdeling (optioneel).',
+ ings:[
+  ['34 g','rauwe hazelnoten'],
+  ['95 ml','Alpro amandelmelk ongezoet'],
+  ['2 scoops','chocolade proteïnepoeder (caseïne of blend)'],
+  ['8 g','cacaopoeder (Van Houten)'],
+  ['30 g','Sukrin korrelig of 2 el suiker'],
+  ['¼ tl','zout + eventueel xanthaangom voor extra dikte'],
+  ['1 Oreo','fijngemalen'],
+ ],
+ steps:[
+  'Rooster hazelnoten op 175°C gedurende 8–10 minuten. Wrijf schilletjes eraf.',
+  'Blend de hazelnoten alleen tot volledig romig en glanzend. Neem hier de tijd voor.',
+  'Voeg amandelmelk, proteïnepoeder, cacao, Sukrin en zout toe. Blend ultra glad.',
+  '30–45 minuten in de koelkast. Goed doorroeren voor serveren. Oreo erdoor.',
+ ]},
+{id:20,cat:'zoet',lbl:'🍫 Zoet',title:'5 Cal Brownies (88 stuks)',
+ cal:5,prot:0.75,fat:0,carbs:0.5,srv:'per stukje (88 stuks)',time:'~35 min',prep:true,
+ emoji:'🟫',img:'brownies,sheet+pan,chocolate,low+calorie',bg:'bg-z',
+ tags:['Griekse yoghurt','Bloem','Eieren','Proteïnepoeder','Cacao / chocolade'],
+ note:'Ja, 5 calorieën per stukje. Maak een hele bakplaat in één keer.',
+ btip:'Sukrin icing bij Holland & Barrett of bol.com. Alpro amandelmelk bij alle supermarkten.',
+ ings:[
+  ['35 g','gewone bloem'],
+  ['25 g','cacaopoeder (Van Houten)'],
+  ['1 scoop','chocolade proteïnepoeder'],
+  ['½ tl','baksoda'],
+  ['72 g','Sukrin korrelig of 4 el gewone suiker'],
+  ['170 g','Griekse yoghurt 0%'],
+  ['120 ml','Alpro amandelmelk ongezoet'],
+  ['1','ei'],
+  ['glazuur:','60 g Sukrin icing of poedersuiker + 30 ml amandelmelk + 7,5 g cacaopoeder'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 175°C. Meng natte en droge ingrediënten apart, dan samenvoegen.',
+  'Spreid op een grote bakplaat met bakpapier. Bak 22–25 minuten.',
+  'Meng het glazuur en smeer over de afgekoelde brownies. Een uur in de koelkast. Snij in 88 stukjes.',
+ ]},
+{id:21,cat:'zoet',lbl:'🍫 Zoet',title:'Snickerdoodle Koekjes (25 cal)',
+ cal:25,prot:2,fat:1,carbs:2,srv:'per koekje (33 stuks)',time:'~30 min',prep:true,
+ emoji:'🍪',img:'snickerdoodle,cookies,cinnamon,homemade',bg:'bg-z',
+ tags:['Eieren','Bloem','Proteïnepoeder'],
+ note:'Maak ze klein — ze groeien enorm in de oven. 15–20 minuten laten rusten na het bakken.',
+ btip:'Kokosmeel bij Colruyt of Albert Heijn (bakken). Wijnsteenzuur = kleine Dr. Oetker zakjes (bakken-afdeling alle supermarkten). Sukrin bij H&B/bol.com.',
+ ings:[
+  ['2','eieren'],
+  ['100 g','Becel light, gesmolten'],
+  ['48 g','Sukrin Gold of 3 el bruine suiker'],
+  ['45 g','vanille caseïne proteïnepoeder (Decathlon)'],
+  ['35 g','kokosmeel (Colruyt/Albert Heijn, bakken)'],
+  ['144 g','Sukrin korrelig of 8 el gewone suiker'],
+  ['1 tl','baksoda + 1 tl wijnsteenzuur (Dr. Oetker) + kaneel + zout'],
+  ['coating:','Sukrin korrelig of suiker + kaneel'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 175°C. Meng nat en droog apart, dan samenvoegen.',
+  '15 minuten in de koelkast. Kleine bolletjes vormen, platdrukken met natte handen.',
+  '7–8 minuten bakken. 15–20 minuten laten rusten. Dan door de kaneel-suiker coating rollen.',
+ ]},
+{id:35,cat:'zoet',lbl:'🍫 Zoet',title:'Chocolade Proteïnemousse',
+ cal:195,prot:28,fat:2,carbs:14,srv:'1 portie',time:'~5 min + 1u koelen',prep:true,
+ emoji:'🍮',img:'chocolate+mousse,protein,creamy,healthy',bg:'bg-z',
+ tags:['Griekse yoghurt','Proteïnepoeder','Cacao / chocolade'],
+ note:'Ongelooflijk simpel en smaakt als echte chocolademousse. 28 g proteïne voor 195 kcal.',
+ btip:'Alles bij elke Belgische supermarkt. Skyr of Griekse yoghurt zijn beide prima. Proteïnepoeder van Decathlon.',
+ ings:[
+  ['200 g','skyr naturel of Griekse yoghurt 0%'],
+  ['1 scoop','chocolade proteïnepoeder'],
+  ['1 el','cacaopoeder (Van Houten)'],
+  ['1 tl','vanille-extract'],
+  ['1 el','honing of suikervrije ahornsiroop'],
+  ['optioneel','een snuifje kaneel of chilivlokken voor een twist'],
+ ],
+ steps:[
+  'Doe alles in een kom en roer glad.',
+  'Minstens 1 uur in de koelkast — de mousse wordt dikker en smeuïger.',
+  'Serveer met een paar stukjes pure chocolade of verse bessen.',
+ ]},
+{id:36,cat:'zoet',lbl:'🍫 Zoet',title:'Nice Cream (Banaan-IJs)',
+ cal:130,prot:2,fat:0.5,carbs:30,srv:'1 portie',time:'5 min + 4u vriezer',prep:true,
+ emoji:'🍌',img:'banana+ice+cream,nice+cream,healthy,frozen',bg:'bg-z',
+ tags:['Banaan','Pindakaas','Cacao / chocolade'],
+ note:'IJsachtige consistentie van alleen bananen. Voeg pindakaas of cacao toe voor extra smaak.',
+ btip:'Alles bij elke Belgische supermarkt. Hoe rijper en bruiner de bananen, hoe zoeter het resultaat.',
+ ings:[
+  ['3 rijpe bananen','in plakjes, 4 uur ingevroren'],
+  ['naar keuze','1 el pindakaas (Pindakaas-variant) of 1 el cacaopoeder (Chocolade-variant)'],
+  ['optioneel','een scheutje Alpro amandelmelk als de blender vastloopt'],
+ ],
+ steps:[
+  'Snij rijpe bananen in plakjes en vries ze minstens 4 uur in.',
+  'Doe de bevroren stukjes in een blender of foodprocessor.',
+  'Blend op hoge snelheid. Voeg eventueel een scheutje melk toe als de blender vastloopt.',
+  'Blend tot een romige, ijsachtige massa. Voeg pindakaas of cacao toe indien gewenst.',
+  'Meteen eten of een half uur extra in de vriezer voor een steviger resultaat.',
+ ]},
+{id:26,cat:'zoet',lbl:'🍫 Zoet',title:'Hazelnut Oreo Nutella (37 kcal/el)',
+ cal:37,prot:4,fat:2,carbs:1,srv:'per eetlepel (36 el)',time:'~20 min',prep:true,
+ emoji:'🌰',img:'hazelnut,chocolate,spread,nutella',bg:'bg-z',
+ tags:['Proteïnepoeder','Cacao / chocolade'],
+ note:'Romiger dan de gewone Nutella-dip. De Oreo maakt het af.',
+ btip:'Hazelnoten bij Colruyt/Delhaize (noten-afdeling). Van Houten cacaopoeder bij alle supermarkten.',
+ ings:[
+  ['450 ml','Alpro amandelmelk ongezoet'],
+  ['4½ scoops','chocolade proteïnepoeder (blend of caseïne)'],
+  ['96 g','rauwe hazelnoten'],
+  ['22,5 g','cacaopoeder (Van Houten)'],
+  ['36 g','Sukrin korrelig of 2 el suiker'],
+  ['4 Oreos','fijngemalen'],
+ ],
+ steps:[
+  'Rooster hazelnoten op 175°C gedurende 7 minuten. Wrijf schilletjes eraf.',
+  'Blend hazelnoten + alle andere ingrediënten meerdere minuten tot heel romig.',
+  'Roer de fijngemalen Oreos erdoor.',
+ ]},
+// ══════════════ SAUZEN ══════════════
+{id:22,cat:'saus',lbl:'🥫 Saus',title:'Raising Cane\'s Saus (6 kcal/el)',
+ cal:6,prot:1,fat:0,carbs:1,srv:'per eetlepel (20 el)',time:'~5 min',prep:true,
+ emoji:'🥫',img:'dipping+sauce,healthy,yogurt,red',bg:'bg-ss',
+ tags:['Griekse yoghurt'],
+ note:'Maak een grote pot en bewaar in de koelkast. Perfecte dipsaus voor kip.',
+ btip:'Heinz 0% suiker ketchup bij Colruyt/Delhaize. Lea & Perrins Worcestershire saus bij Colruyt/Delhaize.',
+ ings:[
+  ['170 g','Griekse yoghurt 0%'],
+  ['6 el','Heinz 0% suiker ketchup'],
+  ['2 el','Lea & Perrins Worcestershire saus'],
+  ['kruiden:','1 tl zwarte peper + 1 tl knoflookpoeder + ½ tl zout'],
+ ],
+ steps:['Alles door elkaar mengen. Minstens 1 uur in de koelkast.']},
+{id:23,cat:'saus',lbl:'🥫 Saus',title:'Chick-fil-A Saus (8 kcal/el)',
+ cal:8,prot:1,fat:0,carbs:1,srv:'per eetlepel (19 el)',time:'~5 min',prep:true,
+ emoji:'🍯',img:'bbq+sauce,healthy,dipping,sweet',bg:'bg-ss',
+ tags:['Griekse yoghurt'],
+ btip:'Heinz BBQ light of Stokes Reduced Sugar BBQ bij Delhaize of Carrefour. Devos Lemmens light mayo bij alle supermarkten.',
+ ings:[
+  ['90 g','Heinz BBQ light'],
+  ['60 g','Griekse yoghurt 0%'],
+  ['60 g','mosterd (huismerk)'],
+  ['45 g','Devos Lemmens light mayo'],
+  ['2 tl','honing + ½ tl zout'],
+ ],
+ steps:['Alles door elkaar mengen. Klaar.']},
+{id:24,cat:'saus',lbl:'🥫 Saus',title:'Honing Mosterd (12 kcal/el)',
+ cal:12,prot:1,fat:0,carbs:2,srv:'per eetlepel (10 el)',time:'~5 min',prep:true,
+ emoji:'🍯',img:'honey+mustard,sauce,healthy,dressing',bg:'bg-ss',
+ tags:['Griekse yoghurt'],
+ btip:'Alles bij elke Belgische supermarkt. Appelciderazijn bij Colruyt/Delhaize.',
+ ings:[
+  ['6 el','Griekse yoghurt 0%'],
+  ['1 el','honing + 1 el mosterd + 1 el appelciderazijn + 1 el citroensap'],
+  ['kruiden:','1 tl knoflookpoeder + zout + peper'],
+ ],
+ steps:['Alles door elkaar mengen. Klaar.']},
+{id:25,cat:'saus',lbl:'🥫 Saus',title:'Creamy Ranch (12 kcal/el)',
+ cal:12,prot:1,fat:1,carbs:0,srv:'per eetlepel (8 el)',time:'~5 min',prep:true,
+ emoji:'🌿',img:'ranch+dressing,creamy,herbs,healthy',bg:'bg-ss',
+ tags:['Griekse yoghurt'],
+ btip:'Karnemelk in de koelkast bij de melk (Colruyt/Delhaize). Verse kruiden bij elke supermarkt.',
+ ings:[
+  ['90 g','Griekse yoghurt 0%'],
+  ['1½ el','karnemelk'],
+  ['1 el','Devos Lemmens light mayo'],
+  ['kruiden:','½ tl elk: verse peterselie, dille, bieslook, knoflookpoeder, uienpoeder, zout, peper'],
+ ],
+ steps:['Alles goed door elkaar roeren. Klaar.']},
+
+// ══════════════ SLAATJES ══════════════
+{id:37,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Griekse Kipsalade',
+ cal:320,prot:42,fat:9,carbs:11,srv:'1 portie',time:'~20 min',prep:false,
+ emoji:'🥗',img:'',bg:'',tags:[],
+ note:'Vol eiwit, supersimpel en supergezond. Ideaal als snelle lunch of avondmaaltijd.',
+ btip:'Feta light bij Delhaize/Colruyt. Kalamata-olijven in bokaal bij elke supermarkt.',
+ ings:[
+  ['200 g','kipfilet, gekookt of gegrild'],
+  ['½','komkommer, in blokjes'],
+  ['2','tomaten, in blokjes'],
+  ['½','rode ui, fijn gesneden'],
+  ['60 g','feta light'],
+  ['handvol','Kalamata-olijven'],
+  ['sap van ½ citroen',''],
+  ['1 tl','olijfolie'],
+  ['kruiden:','gedroogde oregano, zout, peper'],
+ ],
+ steps:[
+  'Kook of gril de kipfilet en snij in reepjes of blokjes.',
+  'Meng komkommer, tomaat, rode ui en olijven in een grote kom.',
+  'Leg de kip erbovenop en verkruimel de feta erover.',
+  'Besprenkel met citroensap en olijfolie. Bestrooi met oregano, zout en peper.',
+ ]},
+{id:38,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Aziatische Koolsalade met Kip',
+ cal:285,prot:36,fat:7,carbs:14,srv:'1 portie',time:'~20 min',prep:true,
+ emoji:'🥗',img:'',bg:'',tags:[],
+ note:'Houdt 2 dagen in de koelkast als je de dressing apart bewaart. Ideale maaltijdvoorbereiding.',
+ btip:'Sesamolie en rijstazijn bij de Aziatische producten, Colruyt of Delhaize. Spitskool of witte kool werkt allebei.',
+ ings:[
+  ['200 g','kipfilet, gegrild of gekookt'],
+  ['200 g','spitskool of witte kool, fijn gesneden'],
+  ['1','wortel, geraspt'],
+  ['2','lente-uitjes, in ringetjes'],
+  ['dressing:','1 el sojasaus + 1 tl sesamolie + 1 el rijstazijn + 1 tl honing + ½ tl gemberpoeder'],
+  ['optioneel:','1 tl sesamzaadjes'],
+ ],
+ steps:[
+  'Gril of kook de kipfilet en laat afkoelen. Trek in reepjes.',
+  'Meng kool, geraspte wortel en lente-ui in een grote kom.',
+  'Roer de dressing los in een apart kommetje.',
+  'Schep de kip door de salade en giet de dressing erover. Goed mengen.',
+  'Eventueel bestrooien met sesamzaadjes voor het serveren.',
+ ]},
+{id:39,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Tonijn-Couscous Salade',
+ cal:365,prot:33,fat:5,carbs:42,srv:'1 portie',time:'~15 min',prep:false,
+ emoji:'🥗',img:'',bg:'',tags:[],
+ note:'Klaar in 15 minuten en weinig afwas. Makkelijk mee te nemen in een lunchbox.',
+ btip:'Volkoren couscous bij Colruyt (Boni-merk is goedkoopst). Tonijn in bronwater = minder calorieën dan in olie.',
+ ings:[
+  ['80 g','volkoren couscous, droog'],
+  ['1 blik (160 g)','tonijn in bronwater, goed uitgelekt'],
+  ['½','komkommer, in blokjes'],
+  ['1','tomaat, in blokjes'],
+  ['½','rode ui, fijn gesneden'],
+  ['handvol','verse peterselie, gehakt'],
+  ['sap van 1 citroen',''],
+  ['1 tl','olijfolie + zout en peper'],
+ ],
+ steps:[
+  'Giet kokend water over de couscous in 1:1 verhouding, dek af met een bord en laat 5 minuten staan.',
+  'Pluizig maken met een vork en laten afkoelen.',
+  'Meng tonijn, komkommer, tomaat, ui en peterselie door de couscous.',
+  'Besprenkel met citroensap en olijfolie. Kruid naar smaak.',
+ ]},
+{id:40,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Spinazie-Aardbei Proteïnesalade',
+ cal:265,prot:30,fat:7,carbs:17,srv:'1 portie',time:'~15 min',prep:false,
+ emoji:'🥗',img:'',bg:'',tags:[],
+ note:'Klinkt raar, smaakt verrassend lekker. De balsamico-kwarkdressing maakt het af.',
+ btip:'Baby spinazie in een zakje bij elke supermarkt. Balsamic glaze bij Colruyt/Delhaize bij de azijnen.',
+ ings:[
+  ['80 g','verse babyspinazie'],
+  ['150 g','aardbeien, in kwartjes'],
+  ['150 g','kipfilet, gekookt of gegrild, in reepjes'],
+  ['30 g','walnoten, grof gehakt'],
+  ['dressing:','3 el magere kwark + 1 el balsamicoazijn + 1 tl honing + zout + peper'],
+ ],
+ steps:[
+  'Roer alle dressing-ingrediënten samen los in een kommetje.',
+  'Verdeel spinazie en aardbeien over een bord.',
+  'Leg de kip erop en strooi de walnoten erover.',
+  'Druppel de dressing erover net voor het serveren.',
+ ]},
+
+// ══════════════ AVONDGERECHTEN ══════════════
+{id:41,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Courgette Bolognese met Kipgehakt',
+ cal:295,prot:39,fat:7,carbs:14,srv:'2 porties',time:'~25 min',prep:true,
+ emoji:'🍝',img:'',bg:'',tags:[],
+ note:'Courgette als pasta geeft een verrassend lichte bolognese. Kipgehakt heeft veel minder vet dan rundergehakt.',
+ btip:'Kipgehakt bij Colruyt/Delhaize (koelkast, vlees). Spiraalsnijder voor courgetti bij Colruyt €5–8, of gewoon in slierten snijden met een dunschiller.',
+ ings:[
+  ['400 g','kipgehakt'],
+  ['2','courgettes, in lange slierten (spiraalsnijder of dunschiller)'],
+  ['1 blik (400 g)','gepelde tomaten'],
+  ['1','witte ui, fijn gesneden'],
+  ['2 teentjes','knoflook, geperst'],
+  ['1 tl','olijfolie'],
+  ['kruiden:','Italiaanse kruiden, paprikapoeder, zout, peper'],
+ ],
+ steps:[
+  'Bak de ui glazig in olijfolie op middelhoog vuur.',
+  'Voeg knoflook toe en bak 1 minuut. Voeg kipgehakt toe en bak rul, zo\'n 7 minuten.',
+  'Giet de gepelde tomaten erbij. Breng op smaak met kruiden en laat 10 minuten sudderen.',
+  'Bak ondertussen de courgetteslierten 2–3 minuten in een droge pan — niet langer, anders worden ze papperig.',
+  'Schep de courgetti op een bord en lepel de bolognese erover.',
+ ]},
+{id:42,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'One-Pan Kip, Zoete Aardappel & Broccoli',
+ cal:435,prot:47,fat:8,carbs:36,srv:'1 portie',time:'~35 min',prep:true,
+ emoji:'🍗',img:'',bg:'',tags:[],
+ note:'Alles op 1 bakplaat = nauwelijks afwas. Bereid 3–4 porties tegelijk voor de hele week.',
+ btip:'Zoete aardappel = patate douce bij Delhaize/Colruyt. Niet verwarren met gewone aardappelen — staat apart in het rek.',
+ ings:[
+  ['200 g','kipfilet'],
+  ['200 g','zoete aardappel, in blokjes van 2 cm'],
+  ['200 g','broccoli, in roosjes'],
+  ['1 tl','olijfolie'],
+  ['kruiden kip:','1 tl paprikapoeder + ½ tl knoflookpoeder + ½ tl komijn + zout + peper'],
+  ['kruiden groenten:','zout, peper, knoflookpoeder'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 200°C.',
+  'Kruid de kipfilet met paprika, knoflookpoeder, komijn, zout en peper.',
+  'Schep de zoete aardappelblokjes en broccoli op een bakplaat, besprenkel met olijfolie en kruid.',
+  'Leg de kipfilet erbij op dezelfde bakplaat.',
+  'Bak 25–30 minuten tot de kip gaar is en de zoete aardappel goudbruin.',
+ ]},
+{id:43,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Gevulde Paprika\'s met Kip & Quinoa',
+ cal:375,prot:38,fat:6,carbs:34,srv:'2 porties',time:'~40 min',prep:true,
+ emoji:'🫑',img:'',bg:'',tags:[],
+ note:'Mooie presentatie met weinig moeite. De dag erna opwarmen werkt perfect.',
+ btip:'Quinoa bij Colruyt (Everyday of Boni-merk). 1 blik tomatenstukjes is prima als alternatief voor verse tomaten.',
+ ings:[
+  ['2 paprika\'s','doorgesneden in de lengte, zaadjes verwijderd'],
+  ['250 g','kipfilet, in kleine blokjes'],
+  ['80 g','quinoa, droog'],
+  ['1 blik (400 g)','tomatenstukjes'],
+  ['1','ui, fijn gesneden'],
+  ['2 teentjes','knoflook, geperst'],
+  ['kruiden:','paprikapoeder, komijn, zout, peper'],
+  ['optioneel:','30 g geraspte light mozzarella voor een gegratineerde topping'],
+ ],
+ steps:[
+  'Kook de quinoa in 160 ml water, 12 minuten op laag vuur. Deksel erop, laat 5 minuten narijzen.',
+  'Verwarm de oven voor op 190°C.',
+  'Bak ui en knoflook glazig. Voeg kipblokjes toe en bak gaar, zo\'n 6 minuten.',
+  'Meng de kip met quinoa, tomatenstukjes en kruiden.',
+  'Leg de paprikahelften in een ovenschaal en schep ze vol met het mengsel.',
+  'Strooi optioneel mozzarella erover. Bak 20–25 minuten in de oven.',
+ ]},
+{id:44,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Ovengebakken Zalm met Citroen & Dille',
+ cal:340,prot:45,fat:14,carbs:2,srv:'1 portie',time:'~20 min',prep:false,
+ emoji:'🐟',img:'',bg:'',tags:[],
+ note:'Zalm heeft omega-3 vetten — de goede soort. Supersnel en moeilijk te verpesten.',
+ btip:'Diepvries zalmfilet bij Colruyt/Delhaize is net zo goed als vers en een stuk goedkoper. Gewoon de avond voor in de koelkast laten ontdooien.',
+ ings:[
+  ['200 g','zalmfilet (vers of ontdooid)'],
+  ['sap van ½ citroen',''],
+  ['½ tl','knoflookpoeder'],
+  ['verse of gedroogde dille','naar smaak'],
+  ['1 tl','olijfolie + zout en peper'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 200°C.',
+  'Leg de zalm op een met bakpapier beklede bakplaat.',
+  'Besprenkel met olijfolie en citroensap. Bestrooi met knoflookpoeder, dille, zout en peper.',
+  'Bak 12–15 minuten. De zalm mag van binnen nog licht rosé zijn — dat is perfect, niet te droog bakken.',
+ ]},
+
+// ══════════════ BATCH 2 ══════════════
+{id:55,cat:'zoet',lbl:'🍫 Zoet',title:'Cottage Cheese Choc Chunk Cookies',
+ cal:140,prot:7,fat:7,carbs:11,srv:'per koekje (10 stuks)',time:'~35 min + 1u koelen',prep:true,
+ emoji:'🍪',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DU9eMFuE2h7/',
+ note:'Zachte kern, knapperige randen. Het deeg MOET 60 minuten in de koelkast — sla dit niet over.',
+ btip:'Hüttenkäse light bij Colruyt/Delhaize. Sukrin Gold = bruine suikervervanger (Holland & Barrett). Balade light boter bij Delhaize. Sukrin Fiber Sirup als suikervrije siroop.',
+ ings:[
+  ['160 g','Hüttenkäse (light)'],
+  ['1 el','vanille-extract'],
+  ['80 ml','Sukrin Fiber Sirup of klein scheutje ahornsiroop'],
+  ['56 g','Balade light boter, gesmolten'],
+  ['50 g','Sukrin Gold of bruine suiker'],
+  ['1','ei'],
+  ['95 g','gewone tarwebloem'],
+  ['30 g','vanille proteïnepoeder (Decathlon Impact Whey)'],
+  ['½ tl','baksoda + ½ tl bakpoeder + ½ tl zout'],
+  ['80 g','pure chocoladestukjes of Tony\'s 70% fijngehakt'],
+ ],
+ steps:[
+  'Blend Hüttenkäse, vanille-extract en siroop tot een glad mengsel.',
+  'Klop gesmolten boter en Sukrin Gold samen gedurende 1 minuut.',
+  'Voeg ei en het Hüttenkäse-mengsel toe, klop 30 seconden.',
+  'Voeg bloem, proteïnepoeder, baksoda, bakpoeder en zout toe. Roer tot net gecombineerd.',
+  'Roer de chocoladestukjes erdoor.',
+  'Dek af en zet 60 minuten in de koelkast — niet overslaan.',
+  'Verwarm de oven voor op 165°C.',
+  'Verdeel in 10 koekjes op een met bakpapier beklede bakplaat.',
+  'Bak 16–18 minuten tot goudbruin. Geef ze even vorm als ze uit de oven komen.',
+  'Laat volledig afkoelen voor je ze eet.',
+ ]},
+{id:56,cat:'zoet',lbl:'🍫 Zoet',title:'Cookie Pie in de Skillet',
+ cal:438,prot:17,fat:35,carbs:12,srv:'per portie (2 porties)',time:'~20 min',prep:false,
+ warn:true,
+ emoji:'🍪',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DXnaroOzkY9/',
+ note:'Lekker, maar niet ideaal als je wil afvallen — hoog in calorieën en vet. Behandel dit als een echte traktatie.',
+ btip:'Amandelmeel bij Holland & Barrett of de biologische afdeling van Colruyt. Sukrin Fiber Sirup als suikervrije siroop.',
+ ings:[
+  ['80 g','pindakaas zonder toegevoegde suiker'],
+  ['30 ml','Sukrin Fiber Sirup'],
+  ['1','ei (klein)'],
+  ['35 g','amandelmeel'],
+  ['mespuntje','baksoda'],
+  ['25 g','Tony\'s Chocolonely 70%, grof gehakt'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 175°C. Vet een kleine ovenvaste skillet of schaaltje in.',
+  'Meng pindakaas, siroop en ei goed door elkaar.',
+  'Roer amandelmeel en baksoda erdoor tot een dik deeg.',
+  'Vouw de chocoladestukjes erdoor. Giet in de skillet en strijk glad.',
+  'Bak 12–15 minuten tot de randen stevig zijn maar het midden nog net zacht.',
+  'Laat afkoelen voor het snijden.',
+ ]},
+{id:57,cat:'zoet',lbl:'🍫 Zoet',title:'High Protein Pindakaas Cups',
+ cal:115,prot:6,fat:5,carbs:11,srv:'per cup (12 stuks)',time:'~20 min + 1u vriezen',prep:true,
+ emoji:'🥜',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DWfUbQGTc35/',
+ note:'Snel te maken, goede macros. Maak in bulk en bewaar in de diepvries.',
+ btip:'PB2 pindakaaspoeder bij Holland & Barrett (~€12/290g) — veel minder vet dan gewone pindakaas. Ongezoete appelmoesje bij Colruyt (Boni-merk). Muffinvormpjes in papier bij elke supermarkt.',
+ ings:[
+  ['96 g','PB2 pindakaaspoeder (Holland & Barrett)'],
+  ['125 g','ongezoete appelmoesje'],
+  ['40 g','proteïnepoeder (Decathlon)'],
+  ['170 g','pure chocoladestukjes of Tony\'s 70% grof gehakt'],
+  ['optioneel:','grof zeezout'],
+ ],
+ steps:[
+  'Meng PB2, appelmoesje en proteïnepoeder tot een dik, vormbaar mengsel.',
+  'Rol tot 12 gelijke balletjes.',
+  'Smelt de chocolade in de microgolfoven (3×30 sec, telkens roeren).',
+  'Doe 1 tl chocolade in elk muffinvormpje. Leg een PB-balletje erop en druk licht plat.',
+  'Dek af met 2 tl chocolade. Tik het bakje om te egaliseren.',
+  'Bestrooi optioneel met grof zeezout. Zet minstens 1 uur in de diepvries.',
+ ]},
+{id:58,cat:'zoet',lbl:'🍫 Zoet',title:'Fudgey Brownie Bites (Dadels)',
+ cal:275,prot:4,fat:10,carbs:44,srv:'per bal (6 ballen)',time:'~20 min + 30 min koelen',prep:true,
+ warn:true,
+ emoji:'🍫',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DWSccNITuih/',
+ note:'Waanzinnig lekker maar 275 kcal per bal. Niet ideaal bij een calorietekort — echte traktatie.',
+ btip:'Ontpitte dadels bij Colruyt (noten-rek of biologische afdeling). Havermeel = zelf 30g havermout malen. Tony\'s 70% voor de coating.',
+ ings:[
+  ['200 g','ontpitte dadels'],
+  ['30 g','havermeel'],
+  ['20 g','ongezoet cacaopoeder (Van Houten)'],
+  ['16 g','pindakaas (1 el)'],
+  ['½ tl','zout'],
+  ['150 g','Tony\'s Chocolonely 70%'],
+  ['15 ml','melk (1 el)'],
+  ['geraspte kokos','voor de coating'],
+ ],
+ steps:[
+  'Blend de dadels tot een plakkerige pasta.',
+  'Voeg havermeel, cacao, pindakaas, zout en melk toe. Mix tot een samenhangend deeg.',
+  'Rol tot 6 ballen en zet 20 minuten in de koelkast.',
+  'Smelt de chocolade in de microgolfoven (3×30 sec, telkens roeren).',
+  'Dip elke bal in de gesmolten chocolade, bestrooi met kokosrasp.',
+  'Laat uitharden in de koelkast.',
+ ]},
+{id:59,cat:'snack',lbl:'🥪 Snack',title:'Cheese Balls (Parmezaan)',
+ cal:64,prot:6,fat:4,carbs:1,srv:'per bal (12 ballen)',time:'~15 min + 2u vriezen',prep:true,
+ emoji:'🧀',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DWNS5P0TFt5/',
+ note:'Twee ingrediënten. Heel zout, lekker met tomatensaus. Houd ze goed in de gaten — verbranden snel.',
+ btip:'Parmezaan in zakje of blok bij Colruyt/Delhaize. Tomatensaus erbij: Heinz of Elvea.',
+ ings:[
+  ['170 g','fijn geraspte Parmezaan'],
+  ['eiwitten van 2 eieren','(ca. 65 g)'],
+  ['optioneel:','tomatensaus om in te dippen'],
+ ],
+ steps:[
+  'Meng Parmezaan en eiwitten tot een compact mengsel.',
+  'Rol tot 12 strakke balletjes van ca. 2,5 cm.',
+  'Leg op een bakplaat en vries 2 uur in.',
+  'Oven (primair): 200°C, 10–14 minuten tot goudbruin — goed in de gaten houden.',
+  'Airfryer (alternatief): 200°C, 7–10 minuten.',
+  'Serveer met tomatensaus.',
+ ]},
+{id:60,cat:'zoet',lbl:'🍫 Zoet',title:'Proteïne Brownies (99 kcal/stuk)',
+ cal:99,prot:11,fat:2,carbs:8,srv:'per brownie (9 stuks)',time:'~25 min',prep:true,
+ emoji:'🍫',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DVr0gp7E9cI/',
+ note:'Volledige batch = meer dan 100g eiwit. Verschil met de banaan-brownies: deze zijn eiwitrijker, geen banaan. Laat ze afkoelen in de koelkast — ze zetten nog na.',
+ btip:'Hüttenkäse bij Colruyt/Delhaize. Decathlon chocolade proteïnepoeder (~€25/kg). Ongezoete appelmoesje bij Colruyt (Boni). Sukrin korrelig als zoetstof.',
+ ings:[
+  ['80 g','gewone tarwebloem'],
+  ['20 g','cacaopoeder (Van Houten)'],
+  ['65 g','chocolade proteïnepoeder (Decathlon)'],
+  ['10 g','Sukrin korrelig of stevia naar smaak'],
+  ['snufje','zout'],
+  ['eiwitten van 5 eieren','(ca. 150 ml)'],
+  ['2','eieren'],
+  ['100 g','Hüttenkäse'],
+  ['20 g','ongezoete appelmoesje'],
+  ['20 ml','ahornsiroop of Sukrin Fiber Sirup'],
+  ['5 ml','vanille-extract'],
+  ['optioneel:','pure chocoladestukjes'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 180°C.',
+  'Meng alle droge ingrediënten in een kom.',
+  'Blend alle natte ingrediënten kort (10 seconden).',
+  'Vouw de natte ingrediënten door de droge tot een dik brownie-beslag.',
+  'Giet in een met bakpapier beklede bakvorm.',
+  'Bak 12–15 minuten — korter voor fudgy, langer voor steviger.',
+  'Laat volledig afkoelen in de koelkast. Snij in 9 stukken.',
+ ]},
+{id:61,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Ananas Kip Crunch Salade',
+ cal:381,prot:59,fat:6,carbs:51,srv:'1 portie',time:'~15 min',prep:false,
+ emoji:'🍍',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DYjdl4mzixd/',
+ note:'59g eiwit in één portie. Onverwacht lekker door zoet (ananas), zuur (kimchi) en frisse yoghurtsaus.',
+ btip:'Kimchi bij Colruyt of Carrefour (koelkast, Aziatische producten). Ananas vers of uit blik op sap (niet op siroop). Augurkennat = vocht uit een pot augurken.',
+ ings:[
+  ['150 g','kipfilet, gekookt of gegrild'],
+  ['150 g','ananas, in stukjes'],
+  ['100 g','rode paprika, in reepjes'],
+  ['80 g','tomaat, in blokjes'],
+  ['100 g','sla naar keuze'],
+  ['50 g','kimchi'],
+  ['sap van ½ citroen',''],
+  ['saus:','150 g Griekse yoghurt 0% + 1 tl basilicum + 1 tl tijm + 1 tl knoflookpoeder + mespuntje munt + scheutje augurkennat + zout'],
+ ],
+ steps:[
+  'Roer alle sausingredïenten goed door elkaar.',
+  'Verdeel sla, ananas, paprika en tomaat in een kom.',
+  'Leg de kip erop en voeg kimchi toe.',
+  'Giet de saus erover en besprenkel met citroensap.',
+ ]},
+{id:62,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Korean Popcorn Chicken (Meal Prep)',
+ cal:495,prot:50,fat:3,carbs:68,srv:'per portie (4 porties)',time:'~40 min',prep:true,
+ emoji:'🍗',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DXOYm8Yk5C5/',
+ note:'Smaakt als afhaal, past perfect in je calorieën. De gochujang-glazuur maakt het. Maak in bulk voor de week.',
+ btip:'Gochujang pasta bij Colruyt of Carrefour (Aziatische afdeling, rode pot). Kleefrijst bij Colruyt/Okay. Maïzena = Maizena bij elke supermarkt. Sukrin Gold als bruine zoetstof.',
+ ings:[
+  ['800 g','kipfilet, in stukjes'],
+  ['1 tl','zwarte peper + 20 ml sojasaus + 1 ei + zout'],
+  ['40 g','maïzena'],
+  ['glazuur:','60 ml sojasaus + 80 ml water + 2 el low-cal ketchup + 3 el gochujang pasta + 2 el rijstazijn + 2 el honing + 30 g Sukrin Gold'],
+  ['rijst:','200 g kleefrijst + 3 el rijstazijn + 1 el zoetstof + zout'],
+ ],
+ steps:[
+  'Meng kip met peper, sojasaus, ei, zout en maïzena.',
+  'Oven (primair): 220°C, 15–20 minuten, halverwege omdraaien.',
+  'Airfryer (alternatief): 200°C, 10–12 minuten.',
+  'Kook kleefrijst volgens verpakking. Laat 10 min afkoelen, meng rijstazijn, zoetstof en zout erdoor.',
+  'Meng glazuuringredïenten in een pan. Laat sudderen tot dik en glanzend.',
+  'Schep de kip door de glazuur. Serveer over de rijst.',
+ ]},
+{id:63,cat:'ontbijt',lbl:'🍳 Ontbijt',title:'Chocolate Chip Oat Bake',
+ cal:506,prot:38,fat:18,carbs:53,srv:'1 portie (hele bake)',time:'~35 min',prep:false,
+ emoji:'🍫',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DV-lbcAk2yv/',
+ note:'Smaakt als dessert maar houdt je uren vol. Makkelijk te customiseren: voeg fruit, pindakaas of banaan toe.',
+ btip:'Havermeel = 60g havermout 30 sec fijnmalen. Sukrin Fiber Sirup als suikervrije siroop. Suikervrije chocoladestukjes bij Holland & Barrett, of Tony\'s 70% fijngehakt.',
+ ings:[
+  ['80 ml','halfvolle melk of Alpro Haver light'],
+  ['120 g','Griekse yoghurt 0%'],
+  ['20 g','Sukrin Fiber Sirup of klein scheutje ahornsiroop'],
+  ['1','ei'],
+  ['60 g','havermeel (zelf malen: 60g havermout)'],
+  ['20 g','suikervrije chocoladestukjes of Tony\'s 70% fijngehakt'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 180°C.',
+  'Meng alle ingrediënten in een kom tot een glad beslag.',
+  'Giet in een ingevet ovenschaaltje.',
+  'Bak 30 minuten op 180°C. Meteen warm eten.',
+ ]},
+{id:64,cat:'ontbijt',lbl:'🍳 Ontbijt',title:'Zoete Aardappel Pannenkoeken (3 ingrediënten)',
+ cal:64,prot:3,fat:2,carbs:9,srv:'per pannenkoek (5 stuks)',time:'~20 min',prep:false,
+ emoji:'🥞',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DUXi3-1E53Z/',
+ note:'Houd ze klein (ca. 8 cm) — dan makkelijker om te draaien. Lekker met een scheutje suikervrije siroop.',
+ btip:'Zoete aardappel (patate douce) bij Colruyt/Delhaize. Koken of 5 min in microgolfoven tot zacht. Sukrin Fiber Sirup als siroop erbij.',
+ ings:[
+  ['250 g','zoete aardappel, gekookt en geplet'],
+  ['2','eieren'],
+  ['kaneel naar smaak',''],
+  ['optioneel:','Sukrin Fiber Sirup'],
+ ],
+ steps:[
+  'Kook de zoete aardappel tot zacht. Plet fijn met een vork.',
+  'Meng eieren en kaneel erdoor tot een beslag.',
+  'Bak kleine pannenkoekjes (ca. 8 cm) in een licht ingevette pan, ca. 2–3 minuten per kant.',
+ ]},
+{id:65,cat:'snack',lbl:'🥪 Snack',title:'High Protein Tonijnbrood',
+ cal:320,prot:48,fat:12,carbs:2,srv:'1 portie',time:'~20 min',prep:false,
+ emoji:'🐟',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DW-OA8VTCHH/',
+ note:'Smaakt niet exact als brood maar doet het werk van een broodje. 48g eiwit voor 320 kcal. 3 ingrediënten.',
+ btip:'2 blikjes tonijn (160g elk) = 320g, na uitgieten ca. 200g netto. Tonijn in bronwater bij elke supermarkt.',
+ ings:[
+  ['2 blikjes (200 g uitgelekt)','tonijn in bronwater'],
+  ['2','eieren'],
+  ['1 tl','bakpoeder'],
+ ],
+ steps:[
+  'Blend alle ingrediënten tot een glad beslag.',
+  'Giet in een ingevette kom, bakje of kleine cakevorm.',
+  'Oven: 180°C, 20–25 minuten tot een tandenstoker er schoon uitkomt.',
+  'Airfryer (alternatief): 180°C, 15 minuten.',
+  'Laat even afkoelen voor je het uit de vorm haalt.',
+ ]},
+{id:66,cat:'zoet',lbl:'🍫 Zoet',title:'Overnight Proteïne Cookie Dough',
+ cal:328,prot:33,fat:9,carbs:32,srv:'1 portie',time:'~10 min + 4u koelen',prep:true,
+ emoji:'🍪',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DXIhL04TRzN/',
+ note:'Begint als beslag maar na een nacht in de koelkast: dikke, smeuige cookie dough. Anders dan de 4-ingrediënten versie: meer volume, meer koolhydraten.',
+ btip:'Havermeel = 30g havermout 30 sec malen in een blender. Water beetje bij beetje — liever te weinig dan te veel.',
+ ings:[
+  ['35 g','vanille proteïnepoeder (Decathlon Impact Whey)'],
+  ['30 g','havermeel (zelf malen)'],
+  ['snufje','baksoda + ½ tl zout'],
+  ['30 g','Griekse yoghurt 0%'],
+  ['ca. 50 ml','water, beetje bij beetje toevoegen'],
+  ['½ tl','vanille-extract'],
+  ['12 g','mini chocoladestukjes'],
+  ['stevia naar smaak',''],
+ ],
+ steps:[
+  'Meng alle droge ingrediënten in een kom.',
+  'Voeg yoghurt, vanille-extract en water geleidelijk toe. Roer tot een cake-beslag consistentie.',
+  'Roer de chocoladestukjes erdoor.',
+  'Zet 3–4 uur of een nacht in de koelkast.',
+  'Na het rusten: dikke cookie dough textuur. Meteen eten.',
+ ]},
+{id:67,cat:'maaltijd',lbl:'🍽️ Maaltijd',title:'Peanut Chilli Noodles',
+ cal:550,prot:18,fat:28,carbs:62,srv:'per portie (2 porties)',time:'~15 min',prep:false,
+ emoji:'🍜',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DX7E2yeMsQO/',
+ note:'Rijke smaak dankzij tahini en pindakaas. Niet de meest low-cal optie. Heet water is key — dat emulgeert de saus glad en glanzend.',
+ btip:'Rijstnoedels of ramen bij Colruyt/Okay (Aziatische afdeling). Tamari = glutenvrije sojasaus. Chili-olie bij Colruyt. Tahini bij Colruyt/Delhaize.',
+ ings:[
+  ['200 g','rijstnoedels of ramen'],
+  ['4','lente-uitjes, fijn gesneden'],
+  ['3 teentjes','knoflook, geperst'],
+  ['2 el','krokante pindakaas'],
+  ['2 el','geroosterde pinda\'s, grof gehakt'],
+  ['60 g','tahini'],
+  ['2 el','sojasaus of tamari'],
+  ['2 el','chili-olie'],
+  ['1 el','limoensap'],
+  ['5 el','heet water'],
+  ['2 el','sesamzaadjes'],
+ ],
+ steps:[
+  'Kook de noedels volgens de verpakking.',
+  'Meng knoflook, pindakaas, pinda\'s, tahini, sojasaus, chili-olie, limoensap en heet water in een grote kom.',
+  'Klop krachtig tot een gladde, glanzende saus. Het hete water is essentieel voor de emulsie.',
+  'Voeg gekookte noedels en meeste lente-ui toe. Goed mengen.',
+  'Garneer met resterende lente-ui en sesamzaadjes.',
+ ]},
+{id:68,cat:'zoet',lbl:'🍫 Zoet',title:'Franse Chocolade Pannenkoeken',
+ cal:320,prot:10,fat:11,carbs:48,srv:'per portie (4 porties)',time:'~25 min',prep:false,
+ warn:true,
+ emoji:'🥞',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/C6HNuyLoQ8d/',
+ note:'⚠️ Niet low-calorie, niet high-protein. Gewoon klassiek en lekker. Cheat-day traktatie.',
+ btip:'Klassiek Frans pannenkoekendeeg. Nutella, Côte d\'Or of speculoospasta als beleg. Niets bijzonders nodig.',
+ ings:[
+  ['2','eieren'],
+  ['280 g','gewone tarwebloem'],
+  ['1 zakje','bakpoeder + 1 zakje vanillesuiker'],
+  ['½ tl','zout'],
+  ['50 g','boter, gesmolten'],
+  ['250 ml','melk'],
+  ['naar keuze:','Nutella of chocoladepasta als beleg'],
+ ],
+ steps:[
+  'Klop eieren, melk en gesmolten boter door elkaar.',
+  'Voeg bloem, bakpoeder, vanillesuiker en zout toe. Roer tot een glad beslag.',
+  'Laat 10 minuten rusten.',
+  'Bak pannenkoeken in een licht ingevette pan op middelhoog vuur.',
+  'Beleg met chocoladepasta.',
+ ]},
+{id:69,cat:'zoet',lbl:'🍫 Zoet',title:'Double Chocolate Skillet Cookie',
+ cal:113,prot:12,fat:4,carbs:10,srv:'per snede (4 sneden)',time:'~20 min',prep:false,
+ emoji:'🍪',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DYK6vFeiDlr/',
+ note:'Bijna 50g eiwit per volledige skillet. Laat het midden iets underdone — dat is de gooey kern. Na 5 min afkoelen stijft het op.',
+ btip:'Kleine ovenvaste skillet (Ø 16 cm) bij HEMA of IKEA. Of een klein ovenschaaltje. Sukrin Gold als bruine suikervervanger (Holland & Barrett).',
+ ings:[
+  ['eiwitten van 2 eieren','(ca. 68 g)'],
+  ['35 g','Balade light boter, zacht'],
+  ['15 g','Sukrin Fiber Sirup'],
+  ['½ tl','vanille-extract'],
+  ['22 g','gewone tarwebloem'],
+  ['45 g','proteïnepoeder (caseïne of whey blend, Decathlon)'],
+  ['48–84 g','Sukrin Gold (meer = krokanter bovenlaag)'],
+  ['16 g','cacaopoeder (Van Houten)'],
+  ['½ tl','baksoda + snufje zout'],
+  ['14 g','chocoladestukjes (in deeg + extra bovenop)'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 175°C.',
+  'Meng eiwitten, boter, siroop en vanille-extract glad.',
+  'Voeg alle droge ingrediënten toe en roer tot een dik koekjesdeeg.',
+  'Doe in een licht ingevette kleine ovenvaste skillet. Leg extra chocoladestukjes bovenop.',
+  'Bak 8–11 minuten — randen stevig, midden nog net zacht.',
+  'Laat 5 minuten afkoelen. Snij in 4.',
+ ]},
+
+// ══════════════ NIEUWE RECEPTEN ══════════════
+{id:47,cat:'zoet',lbl:'🍫 Zoet',title:'Carnivore Donuts',
+ cal:79,prot:5,fat:5,carbs:3,srv:'per donut (6 stuks)',time:'~20 min',prep:false,
+ emoji:'🍩',img:'',bg:'',tags:[],
+ note:'Klinkt wild voor wat erin zit, maar de textuur is verrassend goed. Volledig laten afkoelen voor je ze indopt — warm zijn ze te zacht en valt alles uit elkaar.',
+ btip:'Melkpoeder (Nestlé Nido of huismerk) bij Colruyt/Delhaize bij de koffieproducten. Voor de topping: pindakaas, kwark met cacao of een dun laagje Nutella light.',
+ ings:[
+  ['4','eieren'],
+  ['50 g','Philadelphia light'],
+  ['50 g','melkpoeder (Nestlé Nido of huismerk)'],
+  ['1 el','bakpoeder'],
+  ['20 g','honing'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 200°C.',
+  'Klop alle ingrediënten goed door elkaar tot een glad beslag.',
+  'Verdeel over een ingevette donutvorm. Geen donutvorm? Een muffinvorm werkt ook.',
+  'Bak 10 minuten op 200°C.',
+  'Laat volledig afkoelen voor je ze indopt of besmeert — echt belangrijk.',
+ ]},
+{id:48,cat:'zoet',lbl:'🍫 Zoet',title:'Easy Cookie Dough (4 ingrediënten)',
+ cal:285,prot:28,fat:13,carbs:6,srv:'1 portie (hele kom)',time:'~5 min',prep:false,
+ emoji:'🍪',img:'',bg:'',tags:[],
+ note:'Makkelijker dan de andere cookie dough-versie en betere macros. Meteen eten of 10–15 minuten in de koelkast voor een stevigere textuur.',
+ btip:'Sukrin Fiber Sirup als suikervrije ahornsiroop (Holland & Barrett, ~€7). Of: klein scheutje echte ahornsiroop + een mespuntje stevia. Suikervrije chocoladestukjes bij Holland & Barrett, of gewoon pure chocolade (85%) fijngehakt.',
+ ings:[
+  ['30 g','vanille proteïnepoeder (Decathlon Impact Whey Vanilla)'],
+  ['15 g','gladde pindakaas (zonder toegevoegde suiker)'],
+  ['15 g','Sukrin Fiber Sirup of klein scheutje echte ahornsiroop'],
+  ['15 g','suikervrije chocoladestukjes of gehakte pure chocolade'],
+  ['optioneel:','scheutje water of melk als het mengsel te droog is'],
+ ],
+ steps:[
+  'Meng proteïnepoeder, pindakaas en siroop door elkaar.',
+  'Voeg een heel klein scheutje water of melk toe als het te droog is — beetje bij beetje.',
+  'Roer de chocoladestukjes erdoor.',
+  'Meteen eten, of 10–15 minuten in de koelkast voor een stevigere, smeuigere textuur.',
+ ]},
+{id:49,cat:'zoet',lbl:'🍫 Zoet',title:'Chocolade Banaan Brownie Bites',
+ cal:66,prot:4,fat:2,carbs:8,srv:'per stuk (15 stuks)',time:'~35 min',prep:true,
+ emoji:'🍫',img:'',bg:'',tags:[],
+ note:'Hele lading voor amper 66 kcal per stukje. Laat ze goed afkoelen voor je ze aansnijdt — anders is het chaos.',
+ btip:'Rijpe bruine bananen werken het best: zoeter en gemakkelijker te mengen. Van Houten cacao bij elke supermarkt. Griekse yoghurt 0% bij Colruyt/Delhaize.',
+ ings:[
+  ['300 g','rijpe banaan (ca. 3 bananen), geplet'],
+  ['5','eieren'],
+  ['200 g','Griekse yoghurt 0%'],
+  ['25 g','cacaopoeder (Van Houten)'],
+  ['50 g','honing'],
+  ['optioneel:','1 scoop proteïnepoeder voor extra eiwit'],
+  ['optioneel:','stevia naar smaak voor extra zoetheid'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 200°C.',
+  'Mix alle ingrediënten goed door elkaar tot een glad beslag — met een vork of mixer.',
+  'Giet in een met bakpapier beklede ovenschaal.',
+  'Bak 25 minuten op 200°C.',
+  'Laat volledig afkoelen voor je snijdt. Echt: volledig. Warm snijden = chaos.',
+  'Snij in 15 gelijke stukjes.',
+ ]},
+{id:50,cat:'ontbijt',lbl:'🍳 Ontbijt',title:'High Protein Bagels',
+ cal:189,prot:14,fat:2,carbs:30,srv:'per bagel (4 stuks)',time:'~35 min',prep:true,
+ emoji:'🥯',img:'',bg:'',tags:[],
+ note:'2 ingrediënten voor het deeg, ongelofelijk simpel. Ideaal om op zondag te bakken voor de week.',
+ btip:'Havenbloem of gewone tarwebloem werkt. Griekse yoghurt 0% geeft de meeste eiwitten. "Everything bagel seasoning" bestaat niet in België — gebruik sesamzaadjes of maak zelf: sesamzaad + maanzaad + knoflookpoeder + uienpoeder + grof zout.',
+ ings:[
+  ['180 g','gewone tarwebloem (of havermeel)'],
+  ['340 g','Griekse yoghurt 0%'],
+  ['2 tl','bakpoeder'],
+  ['1 tl','zout'],
+  ['1 tl','knoflookpoeder'],
+  ['1','ei (voor het bestrijken)'],
+  ['topping:','sesamzaadjes, maanzaad of zelfgemaakte bagel seasoning'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 190°C.',
+  'Meng bloem, Griekse yoghurt, bakpoeder, zout en knoflookpoeder tot een samenhangend deeg. Als het plakt, licht bebloemde handen gebruiken.',
+  'Verdeel in 4 gelijke ballen en vorm ze tot bagels door een gat in het midden te maken.',
+  'Leg op een met bakpapier beklede bakplaat. Bestrijk met losgeklopt ei.',
+  'Bestrooi met sesamzaadjes of je eigen kruidenmix.',
+  'Bak 25–30 minuten op 190°C tot goudbruin.',
+ ]},
+{id:51,cat:'zoet',lbl:'🍫 Zoet',title:'3-Ingredient Proteïnekoekjes',
+ cal:204,prot:12,fat:13,carbs:12,srv:'per koekje (5 stuks)',time:'~20 min',prep:false,
+ emoji:'🍪',img:'',bg:'',tags:[],
+ note:'Tahini geeft een rijke, nootachtige smaak die perfect combineert met banaan. Laat ze afkoelen zodat ze steviger worden.',
+ btip:'Tahini (sesamcrème) bij Colruyt of Delhaize in de Aziatische/biologische afdeling, of bij Okay. Suikervrije chocoladestukjes optioneel bij Holland & Barrett.',
+ ings:[
+  ['150 g','rijpe banaan (ca. 1,5 banaan), geplet'],
+  ['100 g','tahini (sesamcrème)'],
+  ['50 g','vanille proteïnepoeder (Decathlon Impact Whey)'],
+  ['optioneel:','20 g suikervrije chocoladestukjes of gehakte pure chocolade'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 180°C.',
+  'Meng banaan, tahini en proteïnepoeder goed door elkaar tot een glad mengsel.',
+  'Vorm 5 gelijke koekjes op een met bakpapier beklede bakplaat.',
+  'Druk eventueel chocoladestukjes in de bovenkant.',
+  'Bak 12 minuten op 180°C.',
+  'Laat volledig afkoelen — ze zijn zacht uit de oven maar worden steviger als ze koud zijn.',
+ ]},
+{id:52,cat:'ontbijt',lbl:'🍳 Ontbijt',title:'Wortel & Aardbei Loaf',
+ cal:79,prot:6,fat:1,carbs:11,srv:'per snede (8 sneden)',time:'~55 min',prep:true,
+ emoji:'🥕',img:'',bg:'',tags:[],
+ note:'De héle loaf = 630 kcal. Dat is minder dan één winkelgekochte taartpunt. Zet de toothpick-test: als die er schoon uitkomt, is hij klaar.',
+ btip:'Havermeel = zelf havermout fijnmalen in een blender (30 seconden). Proteïnepoeder vanille (Decathlon). Halfvolle melk of Alpro lichte havermelk als lichte melk. Pink Lady appel in elke supermarkt.',
+ ings:[
+  ['80 g','wortel, geraspt'],
+  ['2','eieren'],
+  ['80 g','Pink Lady appel, geraspt (ca. ½ appel)'],
+  ['80 g','havermeel (zelf malen: 80g havermout in blender)'],
+  ['100 ml','halfvolle melk of Alpro Haver light'],
+  ['40 g','vanille proteïnepoeder'],
+  ['120 g','aardbeien, geplet tot een puree'],
+  ['2 tl','bakpoeder'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 180°C.',
+  'Meng alle ingrediënten één voor één door elkaar in een grote kom.',
+  'Giet in een ingevette cakevorm of ovenschaal.',
+  'Bak 45 minuten op 180°C.',
+  'Test met een tandenstoker: als die er schoon uitkomt, is de loaf klaar.',
+  'Laat 10 minuten afkoelen voor je snijdt. Snij in 8 gelijke sneden.',
+ ]},
+{id:53,cat:'zoet',lbl:'🍫 Zoet',title:'Overnight Chia Dessert',
+ cal:344,prot:20,fat:13,carbs:42,srv:'1 portie',time:'~5 min + nacht koelen',prep:true,
+ emoji:'🫐',img:'',bg:'',tags:[],
+ note:'Meteen lekker, maar \'s ochtends na een nacht in de koelkast is de textuur dikker en romiger. Met een extra scoop proteïnepoeder kom je tot ~45g eiwit.',
+ btip:'Chiazaden bij Colruyt/Delhaize (bulk- of biologische afdeling). Griekse yoghurt 0% als vervanger van Chobani. Diepvriesframbozen zijn perfect en goedkoper dan vers.',
+ ings:[
+  ['40 g','chiazaden'],
+  ['100 g','Griekse yoghurt 0%'],
+  ['150 g','frambozen (diepvries of vers)'],
+  ['50 ml','halfvolle melk of Alpro Haver light'],
+  ['optioneel:','1 scoop vanille proteïnepoeder voor extra eiwit'],
+ ],
+ steps:[
+  'Meng alle ingrediënten door elkaar in een glas of potje.',
+  'Meteen eten kan, maar de textuur is veel beter na een nacht in de koelkast.',
+  'De chiazaden absorberen de vloeistof en geven een pudding-achtige, dikke consistentie.',
+  'Eventueel een scheutje extra melk toevoegen als het de volgende ochtend te dik is.',
+ ]},
+
+// ══════════════ DESSERTS ══════════════
+{id:54,cat:'zoet',lbl:'🍫 Zoet',title:'Chocolade Lava Cake',
+ cal:250,prot:24,fat:8,carbs:17,srv:'per portie (2 porties)',time:'~30 min',prep:false,
+ emoji:'🍫',img:'',bg:'',tags:[],link:'https://www.instagram.com/p/DUC-6Tyk6x-/',
+ note:'20 minuten bakken voor een gooey lava-midden, 25 minuten voor volledig doorbakken. Laat even afkoelen voor je aanpakt — de binnenkant is serieus heet.',
+ btip:'Hüttenkäse = Belgisch equivalent van cottage cheese, in de koelkast bij Colruyt/Delhaize. Sukrin Fiber Sirup als suikervrije ahornsiroop (Holland & Barrett). Suikervrije chocolade: 85% pure chocolade fijngehakt.',
+ ings:[
+  ['300 g','Hüttenkäse'],
+  ['1','ei'],
+  ['20 g','cacaopoeder (Van Houten)'],
+  ['20 g','Sukrin Fiber Sirup of 1 el echte ahornsiroop'],
+  ['20 g','suikervrije chocoladestukjes of gehakte pure chocolade (85%)'],
+  ['stevia','naar smaak'],
+ ],
+ steps:[
+  'Verwarm de oven voor op 180°C.',
+  'Mix Hüttenkäse, ei, cacao, siroop en stevia goed door elkaar.',
+  'Roer de chocoladestukjes erdoor.',
+  'Giet in een ingevette ovenschaal of 2 ramequins.',
+  'Bak 20 minuten voor een gooey lava-midden, 25 minuten voor volledig doorbakken.',
+  'Laat 5 minuten afkoelen voor het serveren.',
+ ]},
+{id:45,cat:'zoet',lbl:'🍫 Zoet',title:'Chocolade-Kwark Mousse',
+ cal:155,prot:18,fat:2,carbs:15,srv:'2 potjes',time:'~10 min',prep:false,
+ emoji:'🍫',img:'',bg:'',tags:[],
+ note:'Smeuiger dan het klinkt, dankzij de kwark. Koud serveren maakt het nog romiger.',
+ btip:'Magere kwark bij Colruyt (Boni 0%) of Delhaize. Van Houten cacaopoeder is al jaren het beste voor bakken en desserts.',
+ ings:[
+  ['300 g','magere kwark'],
+  ['2 el','cacaopoeder (Van Houten)'],
+  ['1–2 el','Sukrin korrelig of honing, naar smaak'],
+  ['½ tl','vanille-extract'],
+  ['optioneel:','10 g pure chocolade (Tony\'s Puur), grof gehakt'],
+ ],
+ steps:[
+  'Meng kwark, cacao, zoetstof en vanille-extract goed door elkaar met een vork of garde.',
+  'Proef en pas de zoetheid aan naar smaak.',
+  'Verdeel over 2 glazen of potjes.',
+  'Zet minstens 30 minuten in de koelkast — kouder = romiger en steviger van structuur.',
+  'Strooi eventueel wat gehakte pure chocolade over de potjes voor het serveren.',
+ ]},
+{id:46,cat:'zoet',lbl:'🍫 Zoet',title:'No-Bake Aardbei Cheesecake Potje',
+ cal:185,prot:17,fat:3,carbs:22,srv:'2 potjes',time:'~10 min + 1u koelen',prep:true,
+ emoji:'🍓',img:'',bg:'',tags:[],
+ note:'Geen oven, geen gelatine, geen gedoe. Ziet er ook nog eens mooi uit.',
+ btip:'Hüttenkäse = Belgisch equivalent van cottage cheese, bij Colruyt en Delhaize in de koelkast. Rijstwafel als bodem = low-cal alternatief voor koekbodem.',
+ ings:[
+  ['200 g','Hüttenkäse (of magere kwark)'],
+  ['150 g','verse aardbeien, in plakjes'],
+  ['1 el','honing of Sukrin korrelig'],
+  ['½ tl','vanille-extract'],
+  ['2','rijstwafels, fijn verkruimeld (voor de bodem)'],
+  ['sap van ¼ citroen',''],
+ ],
+ steps:[
+  'Verkruimel de rijstwafels en verdeel als bodem in 2 glazen of potjes.',
+  'Meng Hüttenkäse met honing, vanille-extract en citroensap tot een smeuig mengsel.',
+  'Schep over de rijstwafelbodem.',
+  'Verdeel de aardbeienplakjes erbovenop.',
+  'Zet minstens 1 uur in de koelkast voor het serveren.',
+ ]},
+];
+
+// ── STATE ─────────────────────────────────────────────────────
+let filt='all', sort='cal', open=null, selIngs=new Set(), ingOpen=true, maxTime=0;
+
+// ── ALL INGREDIENTS (deduped, cleaned base names) ──────────────
+function cleanIng(s){
+  if(!s)return'';
+  return s
+    .split(',')[0]                              // stop bij eerste komma
+    .replace(/\s+(in|op|met|uit|van)\s+.*/i,'') // stop bij "in bronwater", "van komkommer", enz.
+    .replace(/\d+\s*%/g,'')                    // verwijder "0%", "2%"
+    .replace(/\s+/g,' ')
+    .trim();
+}
+const ALL_INGS=[...new Set(
+  R.flatMap(r=>r.ings.map(i=>cleanIng(i[1])).filter(s=>s.length>2))
+)].sort((a,b)=>a.localeCompare(b,'nl'));
+
+// ── INGREDIENT FILTER UI ──────────────────────────────────────
+let ingHiIdx=-1;
+
+function toggleIngFilter(){
+  ingOpen=!ingOpen;
+  document.getElementById('ing-body').classList.toggle('open',ingOpen);
+  document.getElementById('ing-arrow').textContent=ingOpen?'▲ verberg':'▼ toon';
+}
+
+function ingSearch(){
+  const inp=document.getElementById('ing-input');
+  const v=inp.value.trim().toLowerCase();
+  const dd=document.getElementById('ing-dropdown');
+  ingHiIdx=-1;
+  if(!v){dd.classList.remove('open');dd.innerHTML='';return;}
+  const hits=ALL_INGS.filter(i=>!selIngs.has(i)&&i.toLowerCase().includes(v)).slice(0,12);
+  if(!hits.length){dd.classList.remove('open');dd.innerHTML='<div class="ing-opt" style="color:var(--muted);cursor:default">Geen resultaten</div>';dd.classList.add('open');return;}
+  dd.innerHTML=hits.map(h=>{
+    const esc=v.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    return `<div class="ing-opt" data-val="${h.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${h.replace(new RegExp('('+esc+')','gi'),'<b>$1</b>')}</div>`;
+  }).join('');
+  dd.classList.add('open');
+}
+
+function ingKey(e){
+  const dd=document.getElementById('ing-dropdown');
+  const opts=[...dd.querySelectorAll('.ing-opt[data-val]')];
+  if(!opts.length)return;
+  if(e.key==='ArrowDown'){e.preventDefault();ingHiIdx=Math.min(ingHiIdx+1,opts.length-1);}
+  else if(e.key==='ArrowUp'){e.preventDefault();ingHiIdx=Math.max(ingHiIdx-1,0);}
+  else if(e.key==='Enter'){e.preventDefault();if(ingHiIdx>=0)doSelect(opts[ingHiIdx].dataset.val);else if(opts.length===1)doSelect(opts[0].dataset.val);return;}
+  else if(e.key==='Escape'){dd.classList.remove('open');return;}
+  opts.forEach((o,i)=>o.classList.toggle('hi',i===ingHiIdx));
+  if(ingHiIdx>=0)opts[ingHiIdx].scrollIntoView({block:'nearest'});
+}
+
+function doSelect(val){
+  selIngs.add(val);
+  document.getElementById('ing-input').value='';
+  document.getElementById('ing-dropdown').classList.remove('open');
+  document.getElementById('ing-dropdown').innerHTML='';
+  ingHiIdx=-1;
+  renderIngSelected();
+  render();
+  document.getElementById('ing-input').focus();
+}
+
+function doRemove(val){
+  selIngs.delete(val);
+  renderIngSelected();
+  render();
+}
+
+function renderIngSelected(){
+  const wrap=document.getElementById('ing-selected');
+  wrap.innerHTML=[...selIngs].map(i=>`<span class="ing-sel-chip"><span class="ing-lbl">${i}</span><span class="rm" data-val="${i.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">×</span></span>`).join('');
+  document.getElementById('ing-clear').style.display=selIngs.size?'inline-block':'none';
+}
+
+function clearIngs(){
+  selIngs.clear();
+  document.getElementById('ing-input').value='';
+  document.getElementById('ing-dropdown').classList.remove('open');
+  renderIngSelected();
+  render();
+}
+
+// Event delegation — dropdown clicks
+document.getElementById('ing-dropdown').addEventListener('mousedown',function(e){
+  e.preventDefault();
+  const opt=e.target.closest('.ing-opt[data-val]');
+  if(opt)doSelect(opt.dataset.val);
+});
+
+// Event delegation — remove chips
+document.getElementById('ing-selected').addEventListener('mousedown',function(e){
+  e.preventDefault();
+  const rm=e.target.closest('.rm[data-val]');
+  if(rm)doRemove(rm.dataset.val);
+});
+
+// Input events
+(function(){
+  const inp=document.getElementById('ing-input');
+  inp.addEventListener('input',ingSearch);
+  inp.addEventListener('keydown',ingKey);
+  inp.addEventListener('blur',function(){setTimeout(()=>{document.getElementById('ing-dropdown').classList.remove('open');},200);});
+})();
+
+// ── CARD RENDER ───────────────────────────────────────────────
+const catCls={maaltijd:'cat-m',ontbijt:'cat-o',snack:'cat-s',zoet:'cat-z',saus:'cat-ss'};
+
+function card(r){
+  const mp=r.prep?'<span class="pill pprep">Meal prep</span>':'';
+  const wn=r.warn?'<span class="pill pwarn">⚠️ Niet laag in cal</span>':'';
+  const bt=r.btip?`<div class="btip">🇧🇪 ${r.btip}</div>`:'';
+  const nt=r.note?`<div class="note">💬 ${r.note}</div>`:'';
+  const hasVid=(r.id in videoURLs)?!!videoURLs[r.id]:!!r.link;
+  const vb=hasVid?'<span class="vid-badge">🎬 video</span>':'';
+  return `<div class="card" id="c${r.id}" onclick="tog(${r.id})">
+    <div class="ch">
+      ${vb}
+      <div class="ccat ${catCls[r.cat]}">${r.lbl} · ${r.time}</div>
+      <div class="ctitle">${r.title}</div>
+      <div class="cmacros">
+        <span class="pill pcal">🔥 ${r.cal} kcal</span>
+        <span class="pill pprot">💪 ${r.prot}g eiwit</span>${mp}${wn}
+      </div>
+    </div>
+    <div class="cexp" id="x${r.id}">
+      <div class="cei">
+        <div class="esec">
+          <h4>Macros · ${r.srv}</h4>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;font-size:.81rem">
+            <span>🔥 <b>${r.cal}</b> kcal</span><span>💪 <b>${r.prot}g</b> eiwit</span>
+            <span>🫙 <b>${r.fat}g</b> vet</span><span>🌾 <b>${r.carbs}g</b> koolhydraten</span>
+          </div>
+        </div>
+        ${nt}${bt}
+        <div class="esec" style="margin-top:12px">
+          <h4>🛒 Ingrediënten</h4>
+          <ul class="ings">${r.ings.map(i=>`<li><span class="iamt">${i[0]}</span>${i[1]||''}</li>`).join('')}</ul>
+        </div>
+        <div class="esec">
+          <h4>📋 Bereiding</h4>
+          <ol class="steps">${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+        </div>
+        <div class="vid-section esec" onclick="event.stopPropagation()">
+          <h4>🎥 Video</h4>
+          <div id="vid-section-${r.id}">${renderVideoSection(r.id)}</div>
+        </div>
+        <button class="cpybtn" id="b${r.id}" onclick="cpy(event,${r.id})">📋 Kopieer boodschappenlijst</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function tog(id){
+  const x=document.getElementById(`x${id}`);
+  if(!x)return;
+  const was=x.classList.contains('open');
+  if(open&&open!==id){const px=document.getElementById(`x${open}`);if(px)px.classList.remove('open');}
+  x.classList.toggle('open',!was);
+  open=was?null:id;
+  if(!was)setTimeout(()=>{const c=document.getElementById(`c${id}`);if(c)c.scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+}
+function cpy(e,id){
+  e.stopPropagation();
+  const r=R.find(x=>x.id===id);
+  const txt=`🛒 Boodschappenlijst — ${r.title}\n\n`+r.ings.map(i=>`• ${i[0]} ${i[1]||''}`).join('\n');
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b=document.getElementById(`b${id}`);
+    b.textContent='✅ Gekopieerd!';b.classList.add('ok');
+    setTimeout(()=>{b.innerHTML='📋 Kopieer boodschappenlijst';b.classList.remove('ok');},2000);
+  });
+}
+// ── VIDEO LINKS ───────────────────────────────────────────────
+const videoURLs=JSON.parse(localStorage.getItem('kookboek_videos')||'{}');
+
+function ytId(url){
+  const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([^&\s?#]+)/);
+  return m?m[1]:null;
+}
+function vidPlatform(url){
+  if(url.includes('instagram.com'))return'Instagram';
+  if(url.includes('tiktok.com'))return'TikTok';
+  if(url.includes('youtu'))return'YouTube';
+  return'Video';
+}
+function renderVideoSection(id){
+  const r=R.find(x=>x.id===id);
+  const url=(id in videoURLs)?videoURLs[id]:((r&&r.link)||null);
+  if(!url){
+    return`<button class="vid-add-btn" onclick="showVidInput(${id})">🎥 Video toevoegen</button>`;
+  }
+  const yt=ytId(url);
+  if(yt){
+    return`<div>
+      <a href="${url}" target="_blank" class="vid-thumb-wrap">
+        <img src="https://img.youtube.com/vi/${yt}/hqdefault.jpg" class="vid-thumb" alt="Video preview">
+        <div class="vid-play">▶</div>
+      </a>
+      <div class="vid-edit-bar">
+        <button class="vid-edit-btn" onclick="showVidInput(${id})">✏️ Wijzigen</button>
+        <button class="vid-del-btn" onclick="delVideo(${id})">× Verwijderen</button>
+      </div>
+    </div>`;
+  }
+  const platform=vidPlatform(url);
+  const tileHtml=platform==='Instagram'
+    ?`<a href="${url}" target="_blank" class="ig-tile"><div class="ig-tile-inner">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        <div class="ig-tile-label">Bekijk op Instagram</div>
+        <div class="ig-tile-sub">Tik om de Reel te openen</div>
+      </div></a>`
+    :`<a href="${url}" target="_blank" class="vid-link-btn">▶ Bekijk op ${platform}</a>`;
+  return`<div>${tileHtml}
+    <div class="vid-edit-bar">
+      <button class="vid-edit-btn" onclick="showVidInput(${id})">✏️ Wijzigen</button>
+      <button class="vid-del-btn" onclick="delVideo(${id})">× Verwijderen</button>
+    </div>
+  </div>`;
+}
+function showVidInput(id){
+  const sec=document.getElementById(`vid-section-${id}`);
+  if(!sec)return;
+  sec.innerHTML=`<div class="vid-input-wrap">
+    <input type="url" id="vi-${id}" placeholder="Plak hier de URL (YouTube, Instagram, TikTok…)" value="${videoURLs[id]||''}">
+    <div class="vid-input-row">
+      <button class="cpybtn" style="flex:1;padding:8px" onclick="saveVideo(${id})">Opslaan</button>
+      <button class="vid-edit-btn" onclick="cancelVid(${id})">Annuleer</button>
+    </div>
+  </div>`;
+  document.getElementById(`vi-${id}`).focus();
+  document.getElementById(`vi-${id}`).addEventListener('keydown',e=>{if(e.key==='Enter')saveVideo(id);});
+}
+function saveVideo(id){
+  const inp=document.getElementById(`vi-${id}`);
+  const url=inp?inp.value.trim():'';
+  if(url)videoURLs[id]=url;else delete videoURLs[id];
+  localStorage.setItem('kookboek_videos',JSON.stringify(videoURLs));
+  const sec=document.getElementById(`vid-section-${id}`);
+  if(sec)sec.innerHTML=renderVideoSection(id);
+}
+function delVideo(id){
+  videoURLs[id]=null;
+  localStorage.setItem('kookboek_videos',JSON.stringify(videoURLs));
+  const sec=document.getElementById(`vid-section-${id}`);
+  if(sec)sec.innerHTML=renderVideoSection(id);
+}
+function cancelVid(id){
+  const sec=document.getElementById(`vid-section-${id}`);
+  if(sec)sec.innerHTML=renderVideoSection(id);
+}
+
+function setF(c,el){filt=c;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+function setS(t){sort=t;document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('active'));document.getElementById({cal:'sc',prot:'sp',abc:'sa'}[t]).classList.add('active');render();}
+function setT(m){maxTime=m;['t0','t15','t30','t45','t60'].forEach(id=>document.getElementById(id).classList.remove('active'));document.getElementById('t'+(m||0)).classList.add('active');render();}
+function parseTime(s){const m=s.match(/(\d+)/);return m?parseInt(m[1]):999;}
+
+function render(){
+  const q=document.getElementById('search').value.toLowerCase();
+  let list=R.filter(r=>{
+    if(filt==='novid'){const hv=(r.id in videoURLs)?!!videoURLs[r.id]:!!r.link;if(hv)return false;}
+    else if(filt!=='all'&&r.cat!==filt)return false;
+    if(q&&!r.title.toLowerCase().includes(q)&&!r.ings.some(i=>(i[0]+' '+(i[1]||'')).toLowerCase().includes(q)))return false;
+    if(selIngs.size>0&&![...selIngs].every(si=>r.ings.some(i=>(i[1]||'').toLowerCase().includes(si.toLowerCase()))))return false;
+    if(maxTime>0&&parseTime(r.time)>maxTime)return false;
+    return true;
+  });
+  if(sort==='cal')list.sort((a,b)=>a.cal-b.cal);
+  else if(sort==='prot')list.sort((a,b)=>b.prot-a.prot);
+  else list.sort((a,b)=>a.title.localeCompare(b.title));
+  document.getElementById('rinfo').textContent=`${list.length} recept${list.length!==1?'en':''} gevonden`;
+  document.getElementById('grid').innerHTML=list.length
+    ?list.map(card).join('')
+    :`<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:3rem">🥗</div><p>Geen recepten gevonden voor deze combinatie.</p></div>`;
+}
+
+render();
+
+// ── SERVICE WORKER ────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        nw.addEventListener('statechange', () => {
+          if(nw.state === 'installed' && navigator.serviceWorker.controller){
+            // New version available — show subtle toast
+            const t = document.createElement('div');
+            t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22883a;color:#fff;padding:10px 20px;border-radius:20px;font-size:.85rem;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2)';
+            t.textContent='🔄 Update beschikbaar — herlaad de app';
+            document.body.appendChild(t);
+            setTimeout(()=>t.remove(), 5000);
+          }
+        });
+      });
+    });
+  });
+}
+</script>
+</body>
+</html>
