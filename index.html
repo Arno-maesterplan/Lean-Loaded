@@ -117,6 +117,7 @@ header p{font-size:.78rem;opacity:.75;margin-top:2px;}
 .star:hover,.star:hover~.star{color:#f59e0b;}
 .stars-wrap{display:flex;gap:2px;margin-top:6px;}
 .rating-row{margin-top:8px;}
+.rating-note{width:100%;margin-top:8px;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:.82rem;font-family:inherit;resize:vertical;min-height:60px;background:var(--bg);color:var(--text);box-sizing:border-box;}
 
 
 /* Expand */
@@ -1776,6 +1777,12 @@ function ratingBadge(id){
   if(!r)return'';
   return`<span class="pill prating">${'★'.repeat(r)}${'☆'.repeat(5-r)}</span>`;
 }
+const notes=JSON.parse(localStorage.getItem('ll_notes')||'{}');
+function ratingNote(id){return notes[id]||'';}
+function saveNote(id,val){
+  if(val.trim())notes[id]=val;else delete notes[id];
+  localStorage.setItem('ll_notes',JSON.stringify(notes));
+}
 
 function card(r){
   const mp=r.prep?'<span class="pill pprep">Meal prep</span>':'';
@@ -1821,9 +1828,10 @@ function card(r){
         </div>
         <div class="rating-row esec" onclick="event.stopPropagation()">
           <h4>⭐ Jouw beoordeling</h4>
-          <div id="stars-\${r.id}" class="stars-wrap">\${starsHtml(r.id)}</div>
+          <div id="stars-${r.id}" class="stars-wrap">${starsHtml(r.id)}</div>
+          <textarea id="note-${r.id}" class="rating-note" placeholder="Optioneel: notitie toevoegen…" onclick="event.stopPropagation()" oninput="saveNote(${r.id},this.value)">${ratingNote(r.id)}</textarea>
         </div>
-        <button class="cpybtn" id="b\${r.id}" onclick="cpy(event,\${r.id})">📋 Kopieer boodschappenlijst</button>
+        <button class="cpybtn" id="b${r.id}" onclick="cpy(event,${r.id})">📋 Kopieer boodschappenlijst</button>
       </div>
     </div>
   </div>`;
