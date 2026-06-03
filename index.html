@@ -112,6 +112,7 @@ header p{font-size:.78rem;opacity:.75;margin-top:2px;}
 .hgood{background:#fff3cd;color:#856404;font-size:.68rem;}
 .htreat{background:#fde;color:#c0392b;font-size:.68rem;}
 .prating{background:#fff8e1;color:#f59e0b;font-size:.75rem;letter-spacing:1px;}
+.ptm{background:#e8f5e9;color:#1b5e20;font-weight:700;}
 .star{cursor:pointer;font-size:1.4rem;color:#ddd;transition:color .15s;}
 .star.on{color:#f59e0b;}
 .star:hover{color:#f59e0b;}
@@ -168,7 +169,7 @@ header p{font-size:.78rem;opacity:.75;margin-top:2px;}
   <h1>💪 Lean &amp; Loaded</h1>
   <p>Low calorie · High protein · Belgische supermarkt</p>
   <div class="hstats">
-    <span class="hstat" id="hcount">119 recepten</span>
+    <span class="hstat" id="hcount">125 recepten</span>
     <span class="hstat">🇧🇪 BE-proof</span>
     <span class="hstat">Laag in calorieën</span>
   </div>
@@ -187,6 +188,7 @@ header p{font-size:.78rem;opacity:.75;margin-top:2px;}
     <button class="fbtn" onclick="setF('zoet',this)">🍫 Zoet</button>
     <button class="fbtn" onclick="setF('saus',this)">🥫 Sauzen</button>
     <button class="fbtn novid-filter" onclick="setF('novid',this)">📵 Zonder video</button>
+    <button class="fbtn" onclick="setF('thermomix',this)">🌀 Thermomix</button>
   </div>
   <div class="frow" style="margin-top:6px">
     <button class="hbtn active" onclick="setH(0,this)">Alle</button>
@@ -2796,6 +2798,164 @@ const R = [
   'Laat 5 minuten afkoelen en haal voorzichtig uit de vorm.',
  ]},
 
+{id:120,cat:'thermomix',lbl:'🌀 Thermomix',title:'TM7 Creamy Kip & Bloemkoolsoep',
+ cal:263,prot:40,fat:9,carbs:3,srv:'1 portie (recept = 6)',time:'~30 min',prep:true,
+ emoji:'🥣',img:'',bg:'',tags:[],
+ note:'Absurd romig zonder room of bloem. De Thermomix doet iets magisch met bloemkool. Varoma-kip maakt het proteïnegehalte serieus.',
+ btip:'Bloemkool bij Lidl of Colruyt (ook diepvries). Kippenbouillonpoeder bij Colruyt. Mexicaans kruidenmix bij Colruyt geeft de beste smaak.',
+ link:'https://skinnymixers.com.au/skinnymixers-creamy-chicken-cauliflower-soup/',
+ ings:[
+  ['800 g','bloemkool, in roosjes'],
+  ['600 ml','water'],
+  ['1.5 el','kippenbouillonpoeder of -pasta'],
+  ['½ tl','zwarte peper'],
+  ['15 g','boter (optioneel, weglaten voor minder vet)'],
+  ['800 g','kipfilet, in grote stukken'],
+  ['1 el','kruiden naar keuze (Mexicaans, Italiaans, of paprika)'],
+ ],
+ steps:[
+  'Doe de bloemkoolroosjes in de mengkom. Hak <strong>6 sec | snelheid 4 | omgekeerd | MC</strong>.',
+  'Voeg water, bouillonpoeder en peper toe.',
+  'Leg de kipstukken in de Varoma-bak en bestrooi met kruiden.',
+  'Kook <strong>15 min | stoomtemperatuur | snelheid 2</strong> met Varoma op de mengkom.',
+  'Breek de kip los met een spatel. Voeg boter toe aan de mengkom.',
+  'Kook nog <strong>5 min | stoomtemperatuur | snelheid 2</strong>. Controleer of kip gaar is.',
+  'Zet Varoma opzij. Blend de soep <strong>1 min | snelheid 9 | MC</strong> — langzaam opbouwen.',
+  'Doe soep in kommen. Doe kip terug in de mengkom en versnipper <strong>4 sec | snelheid 4 | omgekeerd</strong>.',
+  'Serveer soep met versnipperde kip erbovenop.',
+ ]},
+{id:121,cat:'thermomix',lbl:'🌀 Thermomix',title:'TM7 Butter Chicken Light',
+ cal:440,prot:50,fat:10,carbs:34,srv:'1 portie + rijst (recept = 4)',time:'~35 min',prep:true,
+ emoji:'🍛',img:'',bg:'',tags:[],
+ note:'Klassieke Indiase troostmaaltijd, lichtgemaakt. De Thermomix hakt, fruitet én kookt alles in één kom.',
+ btip:'Garam masala en kurkuma bij Colruyt. Passata in groot pak bij Lidl. Magere kokosmelk bij Delhaize of Colruyt.',
+ link:'https://skinnymixers.com.au/skinnymixers-butter-chicken-2/',
+ ings:[
+  ['1','ui, in kwarten'],
+  ['3 teentjes','knoflook'],
+  ['1 el','verse gember of gemberpoeder'],
+  ['2 tl','garam masala'],
+  ['1 tl','kurkuma'],
+  ['1 tl','paprikapoeder'],
+  ['½ tl','komijn'],
+  ['400 g','passata'],
+  ['100 ml','kokosmelk light'],
+  ['600 g','kipfilet, in blokjes'],
+  ['150 g','0% Griekse yoghurt'],
+  ['zout','naar smaak'],
+  ['150 g','basmatirijst per persoon (apart koken)'],
+ ],
+ steps:[
+  'Doe ui, knoflook en gember in de mengkom. Hak <strong>5 sec | snelheid 5</strong>. Schraap de wanden.',
+  'Voeg alle specerijen toe. Fruit <strong>3 min | 120°C | snelheid 1</strong>.',
+  'Voeg passata en kokosmelk toe. Kook <strong>5 min | 100°C | snelheid 1</strong>.',
+  'Voeg de kipblokjes toe. Kook <strong>20 min | 100°C | omgekeerd | snelheid 0,5</strong>.',
+  'Controleer of de kip gaar is. Haal van het vuur.',
+  'Roer de Griekse yoghurt erdoor (niet meer koken, anders schift het). Breng op smaak.',
+  'Serveer met basmatirijst en verse koriander.',
+ ]},
+{id:122,cat:'thermomix',lbl:'🌀 Thermomix',title:'TM7 Peri Peri Kip',
+ cal:380,prot:56,fat:9,carbs:14,srv:'1 portie (recept = 4)',time:'~35 min',prep:true,
+ emoji:'🌶️',img:'',bg:'',tags:[],
+ note:'Pittige Portugese klassieker. De Thermomix maakt de saus in 10 sec en kookt de kip erin. Daarna even de oven in voor die char.',
+ btip:'Piri piri saus bij Colruyt of Delhaize (bijv. Nandos). Verse chilipepers bij Colruyt. Paprikas voor de salade bij Lidl.',
+ link:'https://skinnymixers.com.au/skinnymixers-peri-peri-chicken-4/',
+ ings:[
+  ['600 g','kipfilet of kippendijtjes zonder vel'],
+  ['2','rode chilipepers (pittig naar smaak)'],
+  ['3 teentjes','knoflook'],
+  ['1','citroen, sap en rasp'],
+  ['2 el','appelazijn of wijnazijn'],
+  ['1 el','gerookte paprika'],
+  ['1 tl','oregano'],
+  ['1 tl','zout'],
+  ['1 tl','honing of erytritol'],
+  ['1 el','olijfolie (of spray)'],
+ ],
+ steps:[
+  'Doe chili, knoflook, citroensap, azijn, paprika, oregano, zout en honing in de mengkom.',
+  'Blend <strong>10 sec | snelheid 8</strong> tot een gladde marinade.',
+  'Voeg de kip en olijfolie toe. Meng <strong>30 sec | omgekeerd | snelheid 0,5</strong>.',
+  'Kook <strong>20 min | 100°C | omgekeerd | snelheid 0,5</strong>.',
+  'Controleer of kip gaar is (verleng indien nodig met 5 min).',
+  '<strong>Optioneel:</strong> leg de kip op een bakplaat en rooster 5–8 min onder de grill voor een knapperige buitenkant.',
+  'Serveer met rijst of salade en de saus uit de mengkom.',
+ ]},
+{id:123,cat:'thermomix',lbl:'🌀 Thermomix',title:'TM7 All-in-One Kip, Rijst & Groenten',
+ cal:490,prot:54,fat:6,carbs:54,srv:'1 portie (recept = 4)',time:'~40 min',prep:true,
+ emoji:'🍱',img:'',bg:'',tags:[],
+ note:'De perfecte Thermomix-truc: rijst kookt in de kom, kip stoomt in de Varoma, groenten ertussen. Één kookbeurt, complete maaltijd.',
+ btip:'Gebruik alle groenten die je nog hebt liggen. Bouillonpasta bij Colruyt (Knorr of eigen merk).',
+ link:'https://skinnymixers.com.au/skinnymixers-all-in-one-steamed-chicken-veg-rice/',
+ ings:[
+  ['300 g','basmati- of jasmijnrijst (droog, afgespoeld)'],
+  ['700 ml','water'],
+  ['1 el','kippenbouillonpoeder'],
+  ['600 g','kipfilet, in porties'],
+  ['kruiden voor kip','knoflookpoeder, paprika, zout, peper'],
+  ['300 g','gemengde groenten','(broccoli, wortel, paprika, courgette)'],
+ ],
+ steps:[
+  'Doe rijst, water en bouillonpoeder in de mengkom.',
+  'Bestrooi de kip royaal met kruiden. Leg in de Varoma-bak.',
+  'Verdeel de groenten over het Varoma-dienblad.',
+  'Zet Varoma op de mengkom. Kook <strong>30 min | Varoma temperatuur | snelheid 4</strong>.',
+  'Controleer of kip en rijst gaar zijn. Verleng indien nodig met 5 min.',
+  'Laat 2 min rusten. Serveer rijst, kip en groenten samen.',
+ ]},
+{id:124,cat:'thermomix',lbl:'🌀 Thermomix',title:'TM7 Hot Honey Beef Bowl',
+ cal:470,prot:48,fat:12,carbs:38,srv:'1 portie (recept = 4)',time:'~30 min',prep:true,
+ emoji:'🥩',img:'',bg:'',tags:[],
+ note:'Zoet-pittige rindergehakt op zoete aardappel — het werd viral om een goede reden. De TM7 maakt de saus in seconden.',
+ btip:'Rundergehakt 5% vet bij Colruyt. Zoete aardappel bij Colruyt of Lidl. Sriracha bij Delhaize.',
+ link:'https://skinnymixers.com.au/hot-honey-beef-sweet-potato-protein-bowl/',
+ ings:[
+  ['500 g','rundergehakt (≤10% vet)'],
+  ['2','zoete aardappels, in blokjes (±500g)'],
+  ['1','ui, in kwarten'],
+  ['3 teentjes','knoflook'],
+  ['3 el','honing of erytritol'],
+  ['2 el','sojasaus (laag zout)'],
+  ['1 el','sriracha (naar smaak)'],
+  ['1 tl','gerookte paprika'],
+  ['200 g','0% cottage cheese of Griekse yoghurt'],
+  ['lente-ui & sesamzaad','ter garnering'],
+ ],
+ steps:[
+  'Doe ui en knoflook in de mengkom. Hak <strong>5 sec | snelheid 5</strong>. Schraap de wanden.',
+  'Voeg gehakt toe. Bak <strong>8 min | 120°C | omgekeerd | snelheid 0,5</strong>.',
+  'Doe de zoete aardappelblokjes in de Varoma. Zet op de mengkom.',
+  'Voeg honing, sojasaus, sriracha en paprika toe aan de mengkom.',
+  'Kook <strong>15 min | Varoma temperatuur | omgekeerd | snelheid 0,5</strong>.',
+  'Schep cottage cheese in kommen. Verdeel zoete aardappel erop, dan het gehaktmengsel.',
+  'Garneer met lente-ui en sesamzaad.',
+ ]},
+{id:125,cat:'thermomix',lbl:'🌀 Thermomix',title:'TM7 Chilli Lime Kip',
+ cal:360,prot:58,fat:7,carbs:12,srv:'1 portie (recept = 4)',time:'~25 min',prep:true,
+ emoji:'🍋',img:'',bg:'',tags:[],
+ note:'Fris, licht en vol smaak. Werkt als maaltijdprep-basis voor salade, wrap of rijstkom.',
+ btip:'Limoenen bij Colruyt of Lidl. Verse koriander bij Delhaize. Chilivlokken bij Colruyt.',
+ link:'https://skinnymixers.com.au/skinnymixers-chilli-lime-chicken/',
+ ings:[
+  ['600 g','kipfilet'],
+  ['2','limoenen, sap en rasp'],
+  ['2 teentjes','knoflook'],
+  ['1 tl','chilivlokken (naar smaak)'],
+  ['1 tl','komijn'],
+  ['1 tl','koriander (gemalen)'],
+  ['1 tl','honing of erytritol'],
+  ['1 tl','zout'],
+  ['handvol','verse koriander (ter garnering)'],
+ ],
+ steps:[
+  'Doe knoflook, limoensap en -rasp, chilivlokken, komijn, koriander, honing en zout in de mengkom.',
+  'Mix <strong>10 sec | snelheid 6</strong> tot een marinade.',
+  'Voeg de kipfilets toe. Meng <strong>20 sec | omgekeerd | snelheid 0,5</strong>.',
+  'Kook <strong>18 min | 100°C | omgekeerd | snelheid 0,5</strong>.',
+  'Controleer gaarheid. Verleng indien nodig met 3 min.',
+  'Laat 2 min rusten. Serveer met verse koriander, rijst of salade.',
+ ]},
+
 ];
 
 // ── STATE ─────────────────────────────────────────────────────
@@ -2922,7 +3082,8 @@ const HEALTH={
   90:1, 91:2, 92:1, 93:1, 94:1, 95:1, 96:1, 97:1, 98:2, 99:2,
   100:3, 101:1, 102:2, 103:2, 104:2, 105:2, 106:1, 107:1, 108:2, 109:2,
   110:1, 111:1, 112:2, 113:2, 114:2, 115:2,
-  116:1, 117:2, 118:3, 119:1
+  116:1, 117:2, 118:3, 119:1,
+  120:1, 121:2, 122:1, 123:1, 124:2, 125:1
 };
 const HEALTH_LBL={1:'💚 Clean',2:'🟡 Goed',3:'🔴 Treat'};
 const HEALTH_CSS={1:'hclean',2:'hgood',3:'htreat'};
@@ -2969,6 +3130,7 @@ function card(r){
   const vb=hasVid?'<span class="vid-badge">🎬 video</span>':'';
   const hs=HEALTH[r.id]||0;
   const hb=hs>0?`<span class="pill ${HEALTH_CSS[hs]}">${HEALTH_LBL[hs]}</span>`:'';
+  const tmb=r.cat==='thermomix'?'<span class="pill ptm">🌀 TM7</span>':'';
   const rb=ratingBadge(r.id);
   return `<div class="card" id="c${r.id}" onclick="tog(${r.id})">
     <div class="ch">
@@ -2977,7 +3139,7 @@ function card(r){
       <div class="ctitle">${r.title}</div>
       <div class="cmacros">
         <span class="pill pcal">🔥 ${r.cal} kcal</span>
-        <span class="pill pprot">💪 ${r.prot}g eiwit</span>${mp}${wn}${hb}${rb}
+        <span class="pill pprot">💪 ${r.prot}g eiwit</span>${mp}${wn}${hb}${tmb}${rb}
       </div>
     </div>
     <div class="cexp" id="x${r.id}">
