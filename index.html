@@ -3119,8 +3119,95 @@ function cleanIng(s){
     .replace(/\s+/g,' ')
     .trim();
 }
+
+// ── INGREDIËNTEN CANONICALISATIE ──────────────────────────────
+// Elke regel: [basisnaam, [substrings die matchen (lowercase)]]
+// Volgorde telt: specifieker eerst (bv. "zoete aardappel" vóór "aardappel")
+const CANON_RULES=[
+  ['ei',              ['eigeel','eiwit','eieren','vloeibaar ei','vloeibare ei']],
+  ['banaan',          ['banaan']],
+  ['kip',             ['kipfile','kipgehakt','kippendij','kippenwit','kippenbout','kippenvlees','kip']],
+  ['tonijn',          ['tonijn']],
+  ['zalm',            ['zalm']],
+  ['garnaal',         ['garnaal']],
+  ['kabeljauw',       ['kabeljauw']],
+  ['tilapia',         ['tilapia']],
+  ['rundergehakt',    ['rundergehakt']],
+  ['biefstuk',        ['biefstuk','steak','bavette']],
+  ['varkensvlees',    ['varkens','spek','bacon']],
+  ['kalkoen',         ['kalkoen']],
+  ['havermout',       ['havermout','havervlokken','haver']],
+  ['kwark',           ['kwark']],
+  ['Griekse yoghurt', ['griekse yoghurt','griekse yogurt']],
+  ['yoghurt',         ['yoghurt','yogurt']],
+  ['ricotta',         ['ricotta']],
+  ['cottage cheese',  ['cottage cheese']],
+  ['skyr',            ['skyr']],
+  ['proteïnepoeder',  ['proteïnepoeder','proteinpoeder','whey','caseïne','eiwitpoeder']],
+  ['avocado',         ['avocado']],
+  ['zoete aardappel', ['zoete aardappel']],
+  ['aardappel',       ['aardappel']],
+  ['spinazie',        ['spinazie']],
+  ['broccoli',        ['broccoli']],
+  ['courgette',       ['courgette']],
+  ['tomaat',          ['tomaat','tomaten','cherry tom']],
+  ['paprika',         ['paprika']],
+  ['champignon',      ['champignon','paddestoel']],
+  ['ui',              ['sjalot','rode ui','lente-ui','lente-uitje','lenteu','groene ui','uien','ui']],
+  ['knoflook',        ['knoflook']],
+  ['pasta',           ['pasta','penne','fusilli','spaghetti','tagliatelle','linguine','rigatoni','farfalle']],
+  ['rijst',           ['rijst','basmati','jasmine rice']],
+  ['wraps',           ['wrap','tortilla']],
+  ['brood',           ['brood','boterham','toast','baguette','pitabrood','naanbrood']],
+  ['kaas',            ['cheddar','parmezaan','mozzarella','feta','gruyère','gouda','kaas']],
+  ['melk',            ['amandelmelk','havermelk','sojamelk','soyamelk','rijstmelk','kokosmelk','melk']],
+  ['olie',            ['olijfolie','kokosolie','zonnebloemolie','olie']],
+  ['honing',          ['honing']],
+  ['pindakaas',       ['pindakaas']],
+  ['bonen',           ['kidneybonen','witte bonen','zwarte bonen','kikkererwten','linzen','edamame','bonen']],
+  ['maïs',            ['maïs','corn']],
+  ['aardbei',         ['aardbei']],
+  ['bosbes',          ['bosbes','blauwe bes']],
+  ['framboos',        ['framboos','frambozen']],
+  ['mango',           ['mango']],
+  ['appel',           ['appel']],
+  ['citroen',         ['citroen']],
+  ['limoen',          ['limoen']],
+  ['sinaasappel',     ['sinaasappel']],
+  ['ananas',          ['ananas']],
+  ['perzik',          ['perzik']],
+  ['kers',            ['kers','kersen']],
+  ['noten',           ['walnoot','amandel','cashew','pecannoot','pistache','noten','pinda']],
+  ['chocolade',       ['chocolade','cacao','choco']],
+  ['kokos',           ['kokos','geraspte kokos']],
+  ['Biscoff',         ['biscoff','speculoos']],
+  ['proteïnebrood',   ['proteïnebrood','eiwitbrood']],
+  ['quinoa',          ['quinoa']],
+  ['bulgur',          ['bulgur']],
+  ['couscous',        ['couscous']],
+  ['tahini',          ['tahini']],
+  ['sojamelk',        ['sojamelk']],
+  ['miso',            ['miso']],
+  ['kimchi',          ['kimchi']],
+  ['hummus',          ['hummus']],
+];
+
+function canonIng(s){
+  if(!s)return'';
+  const l=s.toLowerCase();
+  for(const[base,kws]of CANON_RULES){
+    if(kws.some(k=>l.includes(k)))return base;
+  }
+  return s;
+}
+
+// Bouw lookup per recept: {recipeId: Set van canonieke ingrediëntnamen}
+const RECIPE_CANONS=Object.fromEntries(
+  R.map(r=>[r.id, new Set(r.ings.map(i=>canonIng(cleanIng(i[1]||''))).filter(s=>s.length>1))])
+);
+
 const ALL_INGS=[...new Set(
-  R.flatMap(r=>r.ings.map(i=>cleanIng(i[1])).filter(s=>s.length>2))
+  R.flatMap(r=>[...RECIPE_CANONS[r.id]])
 )].sort((a,b)=>a.localeCompare(b,'nl'));
 
 // ── INGREDIENT FILTER UI ──────────────────────────────────────
@@ -3435,8 +3522,8 @@ function render(){
     else if(filt!=='all'&&r.cat!==filt)return false;
     if(healthFilt===-1&&!ratings[r.id])return false;
     else if(healthFilt>0&&(HEALTH[r.id]||0)!==healthFilt)return false;
-    if(q&&!r.title.toLowerCase().includes(q)&&!r.ings.some(i=>(i[0]+' '+(i[1]||'')).toLowerCase().includes(q)))return false;
-    if(selIngs.size>0&&![...selIngs].every(si=>r.ings.some(i=>(i[1]||'').toLowerCase().includes(si.toLowerCase()))))return false;
+    if(q&&!r.title.toLowerCase().includes(q)&&!r.tags.some(t=>t.toLowerCase().includes(q))&&!r.ings.some(i=>(i[0]+' '+(i[1]||'')).toLowerCase().includes(q))&&![...RECIPE_CANONS[r.id]].some(c=>c.toLowerCase().includes(q)))return false;
+    if(selIngs.size>0&&![...selIngs].every(si=>RECIPE_CANONS[r.id].has(si)))return false;
     if(maxTime>0&&parseTime(r.time)>maxTime)return false;
     return true;
   });
