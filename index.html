@@ -3431,7 +3431,7 @@ function card(r){
   return `<div class="card" id="c${r.id}" onclick="tog(${r.id})">
     <div class="ch">
       ${vb}
-      <div class="ccat ${catCls[r.cat]}">${r.lbl} · ${r.prep?r.prep+' min':r.time}</div>
+      <div class="ccat ${catCls[r.cat]}">${r.lbl} · ${r.time} min</div>
       <div class="ctitle">${r.title}</div>
       <div class="cmacros">
         <span class="pill pcal">🔥 ${r.cal} kcal</span>
@@ -3584,7 +3584,7 @@ function render(){
     else if(healthFilt>0&&(HEALTH[r.id]||0)!==healthFilt)return false;
     if(q&&!r.title.toLowerCase().includes(q)&&!r.tags.some(t=>t.toLowerCase().includes(q))&&!r.ings.some(i=>(i[0]+' '+(i[1]||'')).toLowerCase().includes(q))&&![...RECIPE_CANONS[r.id]].some(c=>c.toLowerCase().includes(q)))return false;
     if(selIngs.size>0&&![...selIngs].every(si=>RECIPE_CANONS[r.id].has(si)))return false;
-    if(maxTime>0&&(r.prep||parseTime(r.time))>maxTime)return false;
+    if(maxTime>0&&r.time>maxTime)return false;
     return true;
   });
   if(sort==='cal')list.sort((a,b)=>a.cal-b.cal);

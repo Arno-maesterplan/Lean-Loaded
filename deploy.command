@@ -2,7 +2,7 @@
 # 🚀 Lean & Loaded — Deploy script
 # Dubbelklik dit bestand om wijzigingen live te zetten
 
-REPO="/Users/arnomaes/Documents/GitHub/Lean & Loaded"
+REPO="/Users/arnomaes/Developer/GitHub/Lean & Loaded"
 
 cd "$REPO"
 
