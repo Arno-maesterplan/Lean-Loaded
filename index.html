@@ -223,7 +223,7 @@ header p{font-size:.78rem;opacity:.75;margin-top:2px;}
   <button class="sbtn" id="sa" onclick="setS('abc')">A–Z</button>
 </div>
 <div class="srow">
-  <span class="slbl">⏱️ Tijd:</span>
+  <span class="slbl">⏱️ Bereidingstijd:</span>
   <button class="sbtn active" id="t0" onclick="setT(0)">Alles</button>
   <button class="sbtn" id="t15" onclick="setT(15)">≤ 15 min</button>
   <button class="sbtn" id="t30" onclick="setT(30)">≤ 30 min</button>
@@ -3576,7 +3576,7 @@ function render(){
     else if(healthFilt>0&&(HEALTH[r.id]||0)!==healthFilt)return false;
     if(q&&!r.title.toLowerCase().includes(q)&&!r.tags.some(t=>t.toLowerCase().includes(q))&&!r.ings.some(i=>(i[0]+' '+(i[1]||'')).toLowerCase().includes(q))&&![...RECIPE_CANONS[r.id]].some(c=>c.toLowerCase().includes(q)))return false;
     if(selIngs.size>0&&![...selIngs].every(si=>RECIPE_CANONS[r.id].has(si)))return false;
-    if(maxTime>0&&parseTime(r.time)>maxTime)return false;
+    if(maxTime>0&&(r.prep||parseTime(r.time))>maxTime)return false;
     return true;
   });
   if(sort==='cal')list.sort((a,b)=>a.cal-b.cal);
