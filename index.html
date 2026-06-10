@@ -3431,7 +3431,7 @@ function card(r){
   return `<div class="card" id="c${r.id}" onclick="tog(${r.id})">
     <div class="ch">
       ${vb}
-      <div class="ccat ${catCls[r.cat]}">${r.lbl} · ${r.time}</div>
+      <div class="ccat ${catCls[r.cat]}">${r.lbl} · ${r.prep?r.prep+' min':r.time}</div>
       <div class="ctitle">${r.title}</div>
       <div class="cmacros">
         <span class="pill pcal">🔥 ${r.cal} kcal</span>
