@@ -1,5 +1,5 @@
 // Lean & Loaded Service Worker — network-first, falls back to cache
-const CACHE = 'lean-loaded-v9';
+const CACHE = 'lean-loaded-v10';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
