@@ -3527,11 +3527,11 @@ function card(r){
         <div class="esec" style="margin-top:12px">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px">
             <h4 style="margin:0">🛒 Ingrediënten</h4>
-            <div onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:6px;font-size:.82rem">
+            <div style="display:flex;align-items:center;gap:6px;font-size:.82rem">
               <span style="color:var(--muted)">Porties:</span>
-              <button class="scale-btn" onclick="event.stopPropagation();changeScale(${r.id},-1)">−</button>
+              <button class="scale-btn" data-scale="${r.id}" data-delta="-1">−</button>
               <span id="scale-disp-${r.id}" class="scale-disp">${srvLabel(r)}</span>
-              <button class="scale-btn" onclick="event.stopPropagation();changeScale(${r.id},+1)">+</button>
+              <button class="scale-btn" data-scale="${r.id}" data-delta="1">+</button>
             </div>
           </div>
           <ul class="ings" id="ings-${r.id}">${r.ings.map(i=>`<li><span class="iamt">${i[0]}</span>${i[1]||''}</li>`).join('')}</ul>
@@ -3567,12 +3567,10 @@ function tog(id){
 function cpy(e,id){
   e.stopPropagation();
   const r=R.find(x=>x.id===id);
-  const r0=R.find(x=>x.id===id);
-  const base0=srvNum(r0);
-  const cur0=SCALE[id]!==undefined?SCALE[id]:base0;
-  const f=cur0/base0;
-  const fLabel=cur0!==base0?` (voor ${cur0} ${srvUnit(r0)})`:'';
-  r=r0;
+  const base=srvNum(r);
+  const cur=SCALE[id]!==undefined?SCALE[id]:base;
+  const f=cur/base;
+  const fLabel=cur!==base?` (voor ${cur} ${srvUnit(r)})`:'';
   const txt=`🛒 Boodschappenlijst — ${r.title}${fLabel}\n\n`+r.ings.map(i=>`• ${scaleAmt(i[0],f)} ${i[1]||''}`).join('\n');
   navigator.clipboard.writeText(txt).then(()=>{
     const b=document.getElementById(`b${id}`);
@@ -3687,6 +3685,16 @@ function render(){
 }
 
 render();
+
+// ── SCALE BUTTON EVENT DELEGATION ────────────────────────────
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('[data-scale]');
+  if(!btn) return;
+  e.stopPropagation();
+  const id = parseInt(btn.dataset.scale);
+  const delta = parseInt(btn.dataset.delta);
+  changeScale(id, delta);
+}, true); // capture phase: fires before card's onclick
 
 // ── SERVICE WORKER ────────────────────────────────────────────
 if('serviceWorker' in navigator){
