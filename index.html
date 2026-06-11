@@ -85,7 +85,7 @@ header p{font-size:.78rem;opacity:.75;margin-top:2px;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;padding:12px 16px 80px;}
 
 /* ── CARD ── */
-.card{background:var(--card);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+.card{background:var(--card);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;transition:transform .15s,box-shadow .15s;}
 .card:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(45,106,79,.14);}
 
 /* Card body */
@@ -3504,8 +3504,8 @@ function card(r){
   const hb=hs>0?`<span class="pill ${HEALTH_CSS[hs]}">${HEALTH_LBL[hs]}</span>`:'';
   const tmb=r.cat==='thermomix'?'<span class="pill ptm">🌀 TM7</span>':'';
   const rb=ratingBadge(r.id);
-  return `<div class="card" id="c${r.id}" onclick="tog(${r.id})">
-    <div class="ch">
+  return `<div class="card" id="c${r.id}">
+    <div class="ch" onclick="tog(${r.id})" style="cursor:pointer">
       ${vb}
       <div class="ccat ${catCls[r.cat]}">${r.lbl} · ${r.time} min</div>
       <div class="ctitle">${r.title}</div>
@@ -3514,7 +3514,7 @@ function card(r){
         <span class="pill pprot">💪 ${r.prot}g eiwit</span>${mp}${wn}${hb}${tmb}${rb}
       </div>
     </div>
-    <div class="cexp" id="x${r.id}">
+    <div class="cexp" id="x${r.id}" onclick="event.stopPropagation()">
       <div class="cei">
         <div class="esec">
           <h4>Macros <span style="font-weight:400;font-size:.8rem">· per portie · ${srvLabel(r)}</span></h4>
@@ -3529,9 +3529,9 @@ function card(r){
             <h4 style="margin:0">🛒 Ingrediënten</h4>
             <div style="display:flex;align-items:center;gap:6px;font-size:.82rem">
               <span style="color:var(--muted)">Porties:</span>
-              <button class="scale-btn" data-scale="${r.id}" data-delta="-1">−</button>
+              <button class="scale-btn" onclick="changeScale(${r.id},-1)">−</button>
               <span id="scale-disp-${r.id}" class="scale-disp">${srvLabel(r)}</span>
-              <button class="scale-btn" data-scale="${r.id}" data-delta="1">+</button>
+              <button class="scale-btn" onclick="changeScale(${r.id},+1)">+</button>
             </div>
           </div>
           <ul class="ings" id="ings-${r.id}">${r.ings.map(i=>`<li><span class="iamt">${i[0]}</span>${i[1]||''}</li>`).join('')}</ul>
