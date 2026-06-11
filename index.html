@@ -135,6 +135,9 @@ header p{font-size:.78rem;opacity:.75;margin-top:2px;}
 .steps li{font-size:.83rem;padding:5px 0 5px 27px;position:relative;counter-increment:s;border-bottom:1px solid var(--bg);line-height:1.45;}
 .steps li:last-child{border-bottom:none;}
 .steps li::before{content:counter(s);position:absolute;left:0;top:6px;width:19px;height:19px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:800;}
+.scale-btn{background:var(--accent);border:none;color:#fff;width:24px;height:24px;border-radius:50%;font-size:15px;cursor:pointer;line-height:1;padding:0;font-weight:700;}
+.scale-btn:hover{opacity:.85;}
+.scale-disp{display:inline-block;min-width:26px;text-align:center;font-weight:700;font-size:.88rem;}
 .cpybtn{width:100%;padding:10px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.83rem;font-weight:700;cursor:pointer;margin-top:10px;transition:background .15s;}
 .cpybtn:hover{background:#1b4332;}
 .cpybtn.ok{background:var(--gl);}
@@ -3421,6 +3424,45 @@ function saveNote(id,val){
   localStorage.setItem('ll_notes',JSON.stringify(notes));
 }
 
+// ── SERVING SCALER ────────────────────────────────────────────
+const SCALE={};
+function srvLabel(r){
+  if(typeof r.srv==='number') return r.srv===1?'1 portie':r.srv+' porties';
+  return r.srv;
+}
+function fmtNum(n){
+  if(n===Math.round(n))return n.toString();
+  const fracs=[[0.5,'½'],[0.25,'¼'],[0.75,'¾'],[1/3,'⅓'],[2/3,'⅔']];
+  for(const[v,sym]of fracs){
+    if(Math.abs(n-Math.floor(n)-v)<0.05)return(Math.floor(n)>0?Math.floor(n):'')+sym;
+  }
+  return n<10?(Math.round(n*10)/10).toString():Math.round(n).toString();
+}
+function scaleAmt(amt,f){
+  if(f===1)return amt;
+  const s=amt.trim();
+  const frac={'½':0.5,'¼':0.25,'¾':0.75,'⅓':1/3,'⅔':2/3};
+  const m=s.match(/^(\d+)?\s*(½|¼|¾|⅓|⅔)?\s*(.*)$/);
+  if(m&&(m[1]||m[2])){
+    let num=(parseInt(m[1]||0))+(frac[m[2]]||0);
+    if(!num)return amt;
+    return fmtNum(num*f)+(m[3]?' '+m[3].trim():'');
+  }
+  const nm=s.match(/^(\d+(?:[.,]\d+)?)\s*(.*)/);
+  if(!nm)return amt;
+  const num=parseFloat(nm[1].replace(',','.'));
+  return fmtNum(num*f)+(nm[2]?' '+nm[2].trim():'');
+}
+function changeScale(id,delta){
+  const f=Math.max(1,Math.min(10,(SCALE[id]||1)+delta));
+  SCALE[id]=f;
+  const r=R.find(x=>x.id===id);
+  const el=document.getElementById('ings-'+id);
+  if(el)el.innerHTML=r.ings.map(i=>`<li><span class="iamt">${scaleAmt(i[0],f)}</span>${i[1]||''}</li>`).join('');
+  const sd=document.getElementById('scale-disp-'+id);
+  if(sd)sd.textContent='×'+f;
+}
+
 function card(r){
   const mp=r.prep?'<span class="pill pprep">Meal prep</span>':'';
   const wn=r.warn?'<span class="pill pwarn">⚠️ Niet laag in cal</span>':'';
@@ -3445,7 +3487,7 @@ function card(r){
     <div class="cexp" id="x${r.id}">
       <div class="cei">
         <div class="esec">
-          <h4>Macros · ${r.srv}</h4>
+          <h4>Macros <span style="font-weight:400;font-size:.8rem">· per portie · ${srvLabel(r)}</span></h4>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;font-size:.81rem">
             <span>🔥 <b>${r.cal}</b> kcal</span><span>💪 <b>${r.prot}g</b> eiwit</span>
             <span>🫙 <b>${r.fat}g</b> vet</span><span>🌾 <b>${r.carbs}g</b> koolhydraten</span>
@@ -3453,8 +3495,16 @@ function card(r){
         </div>
         ${nt}${bt}
         <div class="esec" style="margin-top:12px">
-          <h4>🛒 Ingrediënten</h4>
-          <ul class="ings">${r.ings.map(i=>`<li><span class="iamt">${i[0]}</span>${i[1]||''}</li>`).join('')}</ul>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px">
+            <h4 style="margin:0">🛒 Ingrediënten</h4>
+            <div onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:6px;font-size:.82rem">
+              <span style="color:var(--muted)">Schaal:</span>
+              <button class="scale-btn" onclick="changeScale(${r.id},-1)">−</button>
+              <span id="scale-disp-${r.id}" class="scale-disp">×1</span>
+              <button class="scale-btn" onclick="changeScale(${r.id},+1)">+</button>
+            </div>
+          </div>
+          <ul class="ings" id="ings-${r.id}">${r.ings.map(i=>`<li><span class="iamt">${i[0]}</span>${i[1]||''}</li>`).join('')}</ul>
         </div>
         <div class="esec">
           <h4>📋 Bereiding</h4>
@@ -3487,7 +3537,9 @@ function tog(id){
 function cpy(e,id){
   e.stopPropagation();
   const r=R.find(x=>x.id===id);
-  const txt=`🛒 Boodschappenlijst — ${r.title}\n\n`+r.ings.map(i=>`• ${i[0]} ${i[1]||''}`).join('\n');
+  const f=SCALE[id]||1;
+  const fLabel=f>1?` (×${f})`:'';
+  const txt=`🛒 Boodschappenlijst — ${r.title}${fLabel}\n\n`+r.ings.map(i=>`• ${scaleAmt(i[0],f)} ${i[1]||''}`).join('\n');
   navigator.clipboard.writeText(txt).then(()=>{
     const b=document.getElementById(`b${id}`);
     b.textContent='✅ Gekopieerd!';b.classList.add('ok');
