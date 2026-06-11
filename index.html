@@ -3425,12 +3425,37 @@ function saveNote(id,val){
 }
 
 // ── SERVING SCALER ────────────────────────────────────────────
+// SCALE[id] = gewenst aantal porties (default = recept's eigen srv-aantal)
 const SCALE={};
+function srvNum(r){
+  if(typeof r.srv==='number')return r.srv;
+  // Haal getal uit string: '8 porties', 'per stuk (8 stuks)', '1 portie (recept = 4)'
+  const p=r.srv.match(/\(\s*(?:recept\s*=\s*)?(\d+)\s*(?:stuks?|porties?|muffins?|wafels?|rollen?|koekjes?|stukjes?|sneden?|el)?\s*\)/i);
+  if(p)return parseInt(p[1]);
+  const d=r.srv.match(/^(\d+)/);
+  return d?parseInt(d[1]):1;
+}
+function srvUnit(r){
+  if(typeof r.srv!=='number'){
+    const s=r.srv.toLowerCase();
+    if(s.includes('muffin'))return'muffins';
+    if(s.includes('wafel'))return'wafels';
+    if(s.includes('koekje'))return'koekjes';
+    if(s.includes('stuk'))return'stuks';
+    if(s.includes('snede')||s.includes('snee'))return'sneden';
+    if(s.includes('wrap'))return'wraps';
+    if(s.includes('rol'))return'rollen';
+    if(s.includes('portie'))return'porties';
+  }
+  const n=SCALE[r.id]!==undefined?SCALE[r.id]:srvNum(r);
+  return n===1?'portie':'porties';
+}
 function srvLabel(r){
-  if(typeof r.srv==='number') return r.srv===1?'1 portie':r.srv+' porties';
-  return r.srv;
+  const n=srvNum(r);
+  return n+' '+srvUnit(r);
 }
 function fmtNum(n){
+  if(n===0)return'0';
   if(n===Math.round(n))return n.toString();
   const fracs=[[0.5,'½'],[0.25,'¼'],[0.75,'¾'],[1/3,'⅓'],[2/3,'⅔']];
   for(const[v,sym]of fracs){
@@ -3439,7 +3464,7 @@ function fmtNum(n){
   return n<10?(Math.round(n*10)/10).toString():Math.round(n).toString();
 }
 function scaleAmt(amt,f){
-  if(f===1)return amt;
+  if(Math.abs(f-1)<0.001)return amt;
   const s=amt.trim();
   const frac={'½':0.5,'¼':0.25,'¾':0.75,'⅓':1/3,'⅔':2/3};
   const m=s.match(/^(\d+)?\s*(½|¼|¾|⅓|⅔)?\s*(.*)$/);
@@ -3454,13 +3479,18 @@ function scaleAmt(amt,f){
   return fmtNum(num*f)+(nm[2]?' '+nm[2].trim():'');
 }
 function changeScale(id,delta){
-  const f=Math.max(1,Math.min(10,(SCALE[id]||1)+delta));
-  SCALE[id]=f;
   const r=R.find(x=>x.id===id);
+  const base=srvNum(r);
+  const cur=SCALE[id]!==undefined?SCALE[id]:base;
+  const next=Math.max(1,cur+delta);
+  SCALE[id]=next;
+  const factor=next/base;
+  // Update ingrediënten
   const el=document.getElementById('ings-'+id);
-  if(el)el.innerHTML=r.ings.map(i=>`<li><span class="iamt">${scaleAmt(i[0],f)}</span>${i[1]||''}</li>`).join('');
+  if(el)el.innerHTML=r.ings.map(i=>`<li><span class="iamt">${scaleAmt(i[0],factor)}</span>${i[1]||''}</li>`).join('');
+  // Update teller
   const sd=document.getElementById('scale-disp-'+id);
-  if(sd)sd.textContent='×'+f;
+  if(sd)sd.textContent=next+' '+srvUnit(r);
 }
 
 function card(r){
@@ -3498,10 +3528,10 @@ function card(r){
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px">
             <h4 style="margin:0">🛒 Ingrediënten</h4>
             <div onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:6px;font-size:.82rem">
-              <span style="color:var(--muted)">Schaal:</span>
-              <button class="scale-btn" onclick="changeScale(${r.id},-1)">−</button>
-              <span id="scale-disp-${r.id}" class="scale-disp">×1</span>
-              <button class="scale-btn" onclick="changeScale(${r.id},+1)">+</button>
+              <span style="color:var(--muted)">Porties:</span>
+              <button class="scale-btn" onclick="event.stopPropagation();changeScale(${r.id},-1)">−</button>
+              <span id="scale-disp-${r.id}" class="scale-disp">${srvLabel(r)}</span>
+              <button class="scale-btn" onclick="event.stopPropagation();changeScale(${r.id},+1)">+</button>
             </div>
           </div>
           <ul class="ings" id="ings-${r.id}">${r.ings.map(i=>`<li><span class="iamt">${i[0]}</span>${i[1]||''}</li>`).join('')}</ul>
@@ -3537,8 +3567,12 @@ function tog(id){
 function cpy(e,id){
   e.stopPropagation();
   const r=R.find(x=>x.id===id);
-  const f=SCALE[id]||1;
-  const fLabel=f>1?` (×${f})`:'';
+  const r0=R.find(x=>x.id===id);
+  const base0=srvNum(r0);
+  const cur0=SCALE[id]!==undefined?SCALE[id]:base0;
+  const f=cur0/base0;
+  const fLabel=cur0!==base0?` (voor ${cur0} ${srvUnit(r0)})`:'';
+  r=r0;
   const txt=`🛒 Boodschappenlijst — ${r.title}${fLabel}\n\n`+r.ings.map(i=>`• ${scaleAmt(i[0],f)} ${i[1]||''}`).join('\n');
   navigator.clipboard.writeText(txt).then(()=>{
     const b=document.getElementById(`b${id}`);
