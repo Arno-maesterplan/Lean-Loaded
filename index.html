@@ -3694,7 +3694,9 @@ function changeScale(id,delta){
 
 function card(r){
   const mp=r.prep?'<span class="pill pprep">Meal prep</span>':'';
-  const wn=r.warn?'<span class="pill pwarn">⚠️ Niet laag in cal</span>':'';
+  const wn=r.warn===true?'<span class="pill pwarn">⚠️ Niet laag in cal</span>':'';
+  const al=(r.warn&&r.warn!==true)?`<div class="note" style="margin-top:6px">⚠️ <b>Allergenen:</b> ${r.warn}</div>`:'';
+
   const bt=r.btip?`<div class="btip">🇧🇪 ${r.btip}</div>`:'';
   const nt=r.note?`<div class="note">💬 ${r.note}</div>`:'';
   const hasVid=(r.id in videoURLs)?!!videoURLs[r.id]:!!r.link;
@@ -3722,7 +3724,7 @@ function card(r){
             <span>🫙 <b>${r.fat}g</b> vet</span><span>🌾 <b>${r.carbs}g</b> koolhydraten</span>
           </div>
         </div>
-        ${nt}${bt}
+        ${nt}${bt}${al}
         <div class="esec" style="margin-top:12px">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px">
             <h4 style="margin:0">🛒 Ingrediënten</h4>
